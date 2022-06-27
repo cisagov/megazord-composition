@@ -1,37 +1,42 @@
 ---
 version: "3.7"
 
-# This Docker composition file is used to build and test the container
-
-secrets:
-  quote_txt:
-    file: ./src/secrets/quote.txt
-
 services:
-  example:
-    # Run the container normally
-    build:
-      # VERSION must be specified on the command line:
-      # e.g., --build-arg VERSION=0.0.1
-      context: .
-      dockerfile: Dockerfile
-    image: cisagov/example
+  coredns:
+    image: xvxd4sh/coredns:latest
     init: true
-    restart: "no"
-    environment:
-      - ECHO_MESSAGE=Hello World from docker compose!
+    restart: on-failure:5
     ports:
-      - target: 8080
-        published: 8080
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
+    volumes:
+      - ./src/coredns/config:/root
+
+  apache2:
+    image: xvxd4sh/apache2
+    init: true
+    restart: on-failure:5
+    ports:
+      - target: 80
+        published: 80
         protocol: tcp
         mode: host
-    secrets:
-      - source: quote_txt
-        target: quote.txt
+      - target: 443
+        published: 443
+        protocol: tcp
+        mode: host
+    volumes:
+      - ./src/apache2/payload/:/var/www/uploads/
+      - ./src/apache2/src/:/var/www/html
+      - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
+      - ./src/apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
 
-  example-version:
-    # Run the container to collect version information
-    image: cisagov/example
-    init: true
-    restart: "no"
-    command: --version
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.202.0/24
