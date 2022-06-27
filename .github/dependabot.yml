@@ -20,7 +20,7 @@ updates:
       - dependency-name: actions/cache
       - dependency-name: actions/checkout
       - dependency-name: actions/setup-python
-      # Managed by cisagov/skeleton-docker
+      # Managed by cisagov/megazord-composition
       # - dependency-name: actions/download-artifact
       # - dependency-name: actions/github-script
       # - dependency-name: actions/upload-artifact
