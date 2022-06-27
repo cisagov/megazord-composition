@@ -6,11 +6,6 @@ services:
     image: xvxd4sh/coredns:latest
     init: true
     restart: on-failure:5
-    ports:
-      - target: 53
-        published: 53
-        protocol: udp
-        mode: host
     volumes:
       - ./src/coredns/config:/root
 
