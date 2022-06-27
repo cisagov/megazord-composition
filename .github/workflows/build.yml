@@ -250,53 +250,53 @@ jobs:
             ${{ env.BASE_CACHE_KEY }}
       - name: Create dist directory
         run: mkdir -p dist
-      - name: Build image
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          build-args: |
-            VERSION=${{ needs.prepare.outputs.source_version }}
-          cache-from: type=local,src=${{ env.BUILDX_CACHE_DIR }}
-          cache-to: type=local,dest=${{ env.BUILDX_CACHE_DIR }}
-          context: .
-          file: ./Dockerfile
-          outputs: type=docker,dest=dist/image.tar
-          tags: ${{ env.IMAGE_NAME }}:latest  # not to be pushed
+    #  - name: Build image
+    #    id: docker_build
+    #    uses: docker/build-push-action@v3
+    #    with:
+    #      build-args: |
+    #        VERSION=${{ needs.prepare.outputs.source_version }}
+    #      cache-from: type=local,src=${{ env.BUILDX_CACHE_DIR }}
+    #      cache-to: type=local,dest=${{ env.BUILDX_CACHE_DIR }}
+    #      context: .
+    #      file: ./Dockerfile
+    #      outputs: type=docker,dest=dist/image.tar
+    #      tags: ${{ env.IMAGE_NAME }}:latest  # not to be pushed
           # For a list of pre-defined annotation keys and value types see:
           # https://github.com/opencontainers/image-spec/blob/master/annotations.md
-          labels: "\
-            org.opencontainers.image.created=${{
-              needs.prepare.outputs.created }}
+    #      labels: "\
+    #        org.opencontainers.image.created=${{
+    #          needs.prepare.outputs.created }}
 
-            org.opencontainers.image.description=${{
-              fromJson(needs.prepare.outputs.repometa).description }}
+    #        org.opencontainers.image.description=${{
+    #          fromJson(needs.prepare.outputs.repometa).description }}
 
-            org.opencontainers.image.licenses=${{
-              fromJson(needs.prepare.outputs.repometa).license.spdx_id }}
+    #        org.opencontainers.image.licenses=${{
+    #          fromJson(needs.prepare.outputs.repometa).license.spdx_id }}
 
-            org.opencontainers.image.revision=${{ github.sha }}
+    #        org.opencontainers.image.revision=${{ github.sha }}
 
-            org.opencontainers.image.source=${{
-              fromJson(needs.prepare.outputs.repometa).clone_url }}
+    #        org.opencontainers.image.source=${{
+    #          fromJson(needs.prepare.outputs.repometa).clone_url }}
 
-            org.opencontainers.image.title=${{
-              fromJson(needs.prepare.outputs.repometa).name }}
+    #        org.opencontainers.image.title=${{
+    #          fromJson(needs.prepare.outputs.repometa).name }}
 
-            org.opencontainers.image.url=${{
-              fromJson(needs.prepare.outputs.repometa).html_url }}
+     #       org.opencontainers.image.url=${{
+     #         fromJson(needs.prepare.outputs.repometa).html_url }}
 
-            org.opencontainers.image.version=${{
-              needs.prepare.outputs.source_version }}"
-      - name: Compress image
-        run: gzip dist/image.tar
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist
-          path: dist
-      - name: Setup tmate debug session
-        uses: mxschmitt/action-tmate@v3
-        if: env.RUN_TMATE
+   #         org.opencontainers.image.version=${{
+   #           needs.prepare.outputs.source_version }}"
+    #  - name: Compress image
+    #    run: gzip dist/image.tar
+    #  - name: Upload artifacts
+    #    uses: actions/upload-artifact@v3
+    #    with:
+    #      name: dist
+    #      path: dist
+    #  - name: Setup tmate debug session
+    #    uses: mxschmitt/action-tmate@v3
+    #    if: env.RUN_TMATE
   test:
     # Executes tests on the single-platform image created in the "build" job.
     name: "Test image"
