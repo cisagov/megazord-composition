@@ -3,10 +3,10 @@
 
 # Standard Python Libraries
 import os
-import time
 
-# Third-Party Libraries
-import pytest
+# import time
+
+# import pytest
 
 ENV_VAR = "ECHO_MESSAGE"
 ENV_VAR_VAL = "Hello World from docker compose!"
@@ -18,12 +18,12 @@ RELEASE_TAG = os.getenv("RELEASE_TAG")
 # VERSION_FILE = "src/version.txt"
 
 
-# def test_container_count(dockerc):
-#    """Verify the test composition and container."""
-#    # stopped parameter allows non-running containers in results
-#    assert (
-#        len(dockerc.containers(stopped=True)) == 2
-#    ), "Wrong number of containers were started."
+def test_container_count(dockerc):
+    """Verify the test composition and container."""
+    # stopped parameter allows non-running containers in results
+    assert (
+        len(dockerc.containers(stopped=True)) == 2
+    ), "Wrong number of containers were started."
 
 
 # def test_wait_for_ready(main_container):
