@@ -27,7 +27,7 @@ To run the `cisagov/example` image via Docker:
 docker run cisagov/example:0.0.1
 ```
 
-### Running with Docker Compose ###
+### Running with Docker-Compose ###
 
 1. Create a `docker-compose.yml` file similar to the one below to use [Docker Compose](https://docs.docker.com/compose/).
 
