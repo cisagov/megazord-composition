@@ -4,6 +4,8 @@ version: "3.7"
 services:
   coredns:
     image: xvxd4sh/coredns:latest
+    container_name: coredns_megazord
+    hostname: coredns_megazord
     init: true
     restart: on-failure:5
     volumes:
