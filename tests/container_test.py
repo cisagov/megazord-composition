@@ -24,10 +24,10 @@ def test_wait_for_ready_apache(apache_container):
     ready_message = READY_MESSAGES["apache"]
     for i in range(TIMEOUT):
         if ready_message in apache_container.logs().decode("utf-8"):
-            break
+            return
         time.sleep(1)
-    else:
-        raise Exception(
-            f"Container does not seem ready.  "
-            f'Expected "{ready_message} in the log within {TIMEOUT} seconds.'
-        )
+
+    raise Exception(
+        f"Container does not seem ready.  "
+        f'Expected "{ready_message} in the log within {TIMEOUT} seconds.'
+    )
