@@ -4,7 +4,7 @@ version: "3.7"
 services:
   coredns:
     image: xvxd4sh/coredns:latest
-    container_name: coredns_megazord
+    container_name: coredns
     hostname: coredns_megazord
     init: true
     restart: on-failure:5
@@ -13,6 +13,7 @@ services:
 
   apache2:
     image: xvxd4sh/apache2
+    container_name: apache
     init: true
     restart: on-failure:5
     ports:
