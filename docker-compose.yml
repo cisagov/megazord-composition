@@ -12,7 +12,7 @@ services:
       - ./src/coredns/config:/root
 
   apache:
-    image: xvxd4sh/apache2
+    image: xvxd4sh/apache2:latest
     container_name: apache
     init: true
     restart: on-failure:5
