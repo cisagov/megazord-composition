@@ -22,6 +22,7 @@ def test_wait_for_ready_apache(apache_container):
     """Verify the apache container is running."""
     TIMEOUT = 20
     ready_message = READY_MESSAGES["apache"]
+    print("AAAA", apache_container.logs().decode("utf-8"))
     for i in range(TIMEOUT):
         if ready_message in apache_container.logs().decode("utf-8"):
             return
