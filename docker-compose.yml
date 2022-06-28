@@ -11,7 +11,7 @@ services:
     volumes:
       - ./src/coredns/config:/root
 
-  apache2:
+  apache:
     image: xvxd4sh/apache2
     container_name: apache
     init: true
