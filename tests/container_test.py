@@ -5,8 +5,8 @@
 import time
 
 READY_MESSAGES = {
-    "apache": "Apache container started",
-    "coredns": "CoreDNS container started",
+    "apache": "resuming normal operations",
+    "coredns": ".:53",
 }
 
 
