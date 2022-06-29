@@ -17,7 +17,7 @@ def apache_container(dockerc):
 def coredns_container(dockerc):
     """Return the coredns container from the Docker composition."""
     # find the container by name even if it is stopped already
-    return dockerc.containers(service_names=["coredns"], stopped=True)
+    return dockerc.containers(service_names=["coredns"], stopped=True)[0]
 
 
 def pytest_addoption(parser):
