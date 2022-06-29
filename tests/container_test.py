@@ -6,7 +6,7 @@ import time
 
 READY_MESSAGES = {
     "apache": "resuming normal operations",
-    "coredns": ".:53",
+    "coredns": "CoreDNS-",
 }
 
 
@@ -35,7 +35,7 @@ def test_wait_for_ready_apache(apache_container):
 
 def test_wait_for_ready_coredns(coredns_container):
     """Verify the coredns container is running."""
-    TIMEOUT = 20
+    TIMEOUT = 30
     ready_message = READY_MESSAGES["coredns"]
     for i in range(TIMEOUT):
         if ready_message in coredns_container.logs().decode("utf-8"):
