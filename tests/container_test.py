@@ -2,13 +2,14 @@
 """Tests for example container."""
 
 # Standard Python Libraries
-import time
 import socket
+import time
 
 READY_MESSAGES = {
     "apache": "HTTP/1.1 200 OK",
     "coredns": "CoreDNS-",
 }
+
 
 def test_container_count(dockerc):
     """Verify the test composition and container."""
