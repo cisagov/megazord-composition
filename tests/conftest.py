@@ -13,6 +13,13 @@ def apache_container(dockerc):
     return dockerc.containers(service_names=["apache"], stopped=True)[0]
 
 
+@pytest.fixture(scope="session")
+def coredns_container(dockerc):
+    """Return the coredns container from the Docker composition."""
+    # find the container by name even if it is stopped already
+    return dockerc.containers(service_names=["coredns"], stopped=True)[0]
+
+
 def pytest_addoption(parser):
     """Add new commandline options to pytest."""
     parser.addoption(
