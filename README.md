@@ -1,31 +1,12 @@
-# megazord-composition 💀🐳 #
+# megazord-composition :dragon_face:🐳 #
 
-[![GitHub Build Status](https://github.com/cisagov/megazord-composition/workflows/build/badge.svg)](https://github.com/cisagov/megazord-composition/actions/workflows/build.yml)
-[![CodeQL](https://github.com/cisagov/megazord-composition/workflows/CodeQL/badge.svg)](https://github.com/cisagov/megazord-composition/actions/workflows/codeql-analysis.yml)
-[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/megazord-composition/badge.svg)](https://snyk.io/test/github/cisagov/megazord-composition)
+[![GitHub Build Status](https://github.com/xvxd4sh/megazord-composition/workflows/build/badge.svg)](https://github.com/xvxd4sh/megazord-composition/actions/workflows/build.yml)
+[![CodeQL](https://github.com/xvxd4sh/megazord-composition/workflows/CodeQL/badge.svg)](https://github.com/xvxd4sh/megazord-composition/actions/workflows/codeql-analysis.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/xvxd4sh/megazord-composition/badge.svg)](https://snyk.io/test/github/xvxd4sh/megazord-composition)
 
-## Docker Image ##
-
-[![Docker Pulls](https://img.shields.io/docker/pulls/cisagov/example)](https://hub.docker.com/r/cisagov/example)
-[![Docker Image Size (latest by date)](https://img.shields.io/docker/image-size/cisagov/example)](https://hub.docker.com/r/cisagov/example)
-[![Platforms](https://img.shields.io/badge/platforms-amd64%20%7C%20arm%2Fv6%20%7C%20arm%2Fv7%20%7C%20arm64%20%7C%20ppc64le%20%7C%20s390x-blue)](https://hub.docker.com/r/cisagov/megazord-composition/tags)
-
-This is a Docker skeleton project that can be used to quickly get a
-new [cisagov](https://github.com/cisagov) GitHub Docker project
-started.  This skeleton project contains [licensing
-information](LICENSE), as well as [pre-commit hooks](https://pre-commit.com)
-and [GitHub Actions](https://github.com/features/actions) configurations
-appropriate for Docker containers and the major languages that we use.
+This is a composition of the megazord docker containers.
 
 ## Running ##
-
-### Running with Docker ###
-
-To run the `cisagov/example` image via Docker:
-
-```console
-docker run cisagov/example:0.0.1
-```
 
 ### Running with Docker-Compose ###
 
@@ -129,7 +110,7 @@ environment variables.  See the
     ```
 
 1. Recreate and run the container by following the [previous instructions](#running-with-docker).
-
+<!--
 ## Image tags ##
 
 The images of this container are tagged with [semantic
@@ -165,7 +146,7 @@ The following ports are exposed by this container:
 
 The sample [Docker composition](docker-compose.yml) publishes the
 exposed port at 8080.
-
+-->
 ## Environment variables ##
 
 ### Required ###
@@ -177,19 +158,19 @@ There are no required environment variables.
 |-------|---------|---------|
 | `REQUIRED_VARIABLE` | Describe its purpose. | `null` |
 -->
-
+ <!--
 ### Optional ###
 
 | Name  | Purpose | Default |
 |-------|---------|---------|
 | `ECHO_MESSAGE` | Sets the message echoed by this container.  | `Hello World from Dockerfile` |
-
+-->
 ## Secrets ##
 
 | Filename     | Purpose |
 |--------------|---------|
 | `quote.txt` | Replaces the secret stored in the example library's package data. |
-
+<!--
 ## Building from source ##
 
 Build the image locally using this git repository as the [build context](https://docs.docker.com/engine/reference/commandline/build/#git-repositories):
@@ -200,7 +181,8 @@ docker build \
   --tag cisagov/example:0.0.1 \
   https://github.com/cisagov/example.git#develop
 ```
-
+-->
+<!--
 ## Cross-platform builds ##
 
 To create images that are compatible with other platforms, you can use the
@@ -238,7 +220,7 @@ Please see our [Project Setup guide](https://github.com/cisagov/development-guid
 for step-by-step instructions on how to start a new repository from
 a skeleton. This will save you time and effort when configuring a
 new repository!
-
+-->
 ## Contributing ##
 
 We welcome contributions!  Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for
