@@ -17,18 +17,48 @@ This is a composition of the megazord docker containers.
     version: "3.7"
 
     services:
-      example:
-        image: cisagov/example:0.0.1
+      coredns:
+        image: xvxd4sh/coredns:latest
+        container_name: coredns
+        hostname: coredns_megazord
+        init: true
+        restart: on-failure:5
         volumes:
-          - type: bind
-            source: <your_log_dir>
-            target: /var/log
-        environment:
-          - ECHO_MESSAGE="Hello from docker compose"
+          - ./src/coredns/config:/root
+        networks:
+          appNetwork:
+            ipv4_address: 172.19.0.3
+
+      apache:
+        image: xvxd4sh/apache2:latest
+        container_name: apache
+        init: true
+        restart: on-failure:5
         ports:
-          - target: 8080
-            published: 8080
+          - target: 80
+            published: 80
             protocol: tcp
+            mode: host
+          - target: 443
+            published: 443
+            protocol: tcp
+            mode: host
+        volumes:
+          - ./src/apache2/payload/:/var/www/uploads/
+          - ./src/apache2/src/:/var/www/html
+          - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
+          - ./src/apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
+        networks:
+          appNetwork:
+            ipv4_address: 172.19.0.4
+
+    networks:
+       appNetwork:
+        driver: bridge
+        ipam:
+          driver: default
+          config:
+            - subnet: 172.19.0.0/16
     ```
 
 1. Start the container and detach:
@@ -36,7 +66,7 @@ This is a composition of the megazord docker containers.
     ```console
     docker compose up --detach
     ```
-
+<!--
 ## Using secrets with your container ##
 
 This container also supports passing sensitive values via [Docker
@@ -78,7 +108,7 @@ environment variables.  See the
           - source: quote_txt
             target: quote.txt
     ```
-
+-->
 ## Updating your container ##
 
 ### Docker Compose ###
@@ -94,7 +124,7 @@ environment variables.  See the
     ```console
     docker compose up --detach
     ```
-
+<!--
 ### Docker ###
 
 1. Stop the running container:
@@ -110,6 +140,7 @@ environment variables.  See the
     ```
 
 1. Recreate and run the container by following the [previous instructions](#running-with-docker).
+-->
 <!--
 ## Image tags ##
 
