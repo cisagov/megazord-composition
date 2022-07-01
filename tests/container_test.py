@@ -24,7 +24,7 @@ def test_container_count(dockerc):
 
 def test_wait_for_ready_apache(apache_container):
     """Verify the apache container is running."""
-    web_request = b"GET / HTTP/1.1\r\nHOST:localhost.com\r\n\r\n"
+    web_request = b"GET / HTTP/1.1\r\nHOST:172.19.0.4.com\r\n\r\n"
     ready_message = READY_MESSAGES["apache"]
     host = "localhost"
     port = 80
