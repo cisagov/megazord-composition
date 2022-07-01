@@ -10,6 +10,9 @@ services:
     restart: on-failure:5
     volumes:
       - ./src/coredns/config:/root
+    networks:
+      appNetwork:
+        ipv4_address: 172.19.0.3
 
   apache:
     image: xvxd4sh/apache2:latest
@@ -30,11 +33,14 @@ services:
       - ./src/apache2/src/:/var/www/html
       - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
       - ./src/apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
+    networks:
+      appNetwork:
+        ipv4_address: 172.19.0.4
 
 networks:
-  default:
+  appNetwork:
     driver: bridge
     ipam:
       driver: default
       config:
-        - subnet: 172.16.202.0/24
+        - subnet: 172.19.0.0/16

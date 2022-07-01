@@ -5,6 +5,9 @@
 import socket
 import time
 
+# Third-Party Libraries
+import dns.resolver
+
 READY_MESSAGES = {
     "apache": "HTTP/1.1 200 OK",
     "coredns": "CoreDNS-",
@@ -53,3 +56,14 @@ def test_wait_for_ready_coredns(coredns_container):
             f"Container does not seem ready.  "
             f'Expected "{ready_message} in the log within {TIMEOUT} seconds.'
         )
+
+
+def test_dns_query(coredns_container):
+    """Verify the coredns container is working."""
+    resolver = dns.resolver.Resolver()
+    resolver.nameservers = ["172.19.0.3"]
+
+    try:
+        resolver.query("google.com")
+    except dns.resolver.NoNameservers as err:
+        print(err)

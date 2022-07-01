@@ -1,4 +1,5 @@
 --requirement requirements.txt
+dnspython
 pre-commit
 pytest
 pytest-dockerc
