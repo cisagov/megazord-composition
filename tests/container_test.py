@@ -30,7 +30,7 @@ def test_wait_for_ready_apache(apache_container):
     output = b""
     port = 80
 
-    while 1: # we loop so if a connection is reset it is re-established
+    while 1:  # we loop so if a connection is reset it is re-established
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.connect((host, port))
@@ -40,7 +40,7 @@ def test_wait_for_ready_apache(apache_container):
         except socket.error as err:
             raise Exception(f"Socket error during setup: {err}.")
 
-        else: # if no exception is raised, exit the loop
+        else:  # if no exception is raised, exit the loop
             break
 
     if output == b"" or ready_message not in output.decode("utf-8"):
