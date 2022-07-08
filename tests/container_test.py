@@ -30,14 +30,18 @@ def test_wait_for_ready_apache(apache_container):
     output = b""
     port = 80
 
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((host, port))
-        s.send(web_request)
-        output = s.recv(1024)
+    while 1: # we loop so if a connection is reset it is re-established
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((host, port))
+            s.send(web_request)
+            output = s.recv(1024)
 
-    except socket.error as err:
-        raise Exception(f"Socket error during setup: {err}.")
+        except socket.error as err:
+            raise Exception(f"Socket error during setup: {err}.")
+
+        else: # if no exception is raised, exit the loop
+            break
 
     if output == b"" or ready_message not in output.decode("utf-8"):
         raise Exception(
