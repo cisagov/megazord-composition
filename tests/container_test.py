@@ -24,9 +24,10 @@ def test_container_count(dockerc):
 
 def test_wait_for_ready_apache(apache_container):
     """Verify the apache container is running."""
-    web_request = b"GET / HTTP/1.1\r\nHOST:172.19.0.4.com\r\n\r\n"
+    web_request = b"GET / HTTP/1.1\r\nHOST:172.19.0.4\r\n\r\n"
     ready_message = READY_MESSAGES["apache"]
     host = "localhost"
+    output = b""
     port = 80
 
     try:
@@ -34,13 +35,15 @@ def test_wait_for_ready_apache(apache_container):
         s.connect((host, port))
         s.send(web_request)
         output = s.recv(1024)
-        if ready_message not in output.decode("utf-8"):
-            raise Exception(
-                f"Container does not seem ready.  "
-                f'Expected "{ready_message} in the output.'
-            )
+
     except socket.error as err:
-        print(err)
+        raise Exception(f"Socket error during setup: {err}.")
+
+    if output == b"" or ready_message not in output.decode("utf-8"):
+        raise Exception(
+            f"Container does not seem ready. "
+            f"Expected {ready_message} in the output. "
+        )
 
 
 def test_wait_for_ready_coredns(coredns_container):
@@ -54,7 +57,7 @@ def test_wait_for_ready_coredns(coredns_container):
     else:
         raise Exception(
             f"Container does not seem ready.  "
-            f'Expected "{ready_message} in the log within {TIMEOUT} seconds.'
+            f"Expected {ready_message} in the log within {TIMEOUT} seconds."
         )
 
 
