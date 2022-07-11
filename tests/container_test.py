@@ -24,7 +24,7 @@ def test_container_count(dockerc):
 
 def test_wait_for_ready_apache(apache_container):
     """Verify the apache container is running."""
-    host = "172.19.0.4"
+    host = "localhost"
     port = 80
     ready_message = READY_MESSAGES["apache"]
     output = b""
@@ -32,7 +32,7 @@ def test_wait_for_ready_apache(apache_container):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
-        s.sendall(b"GET / HTTP/1.1\r\nHost: 172.19.0.4\r\n\r\n")
+        s.sendall(b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n")
         output = s.recv(1024)
 
     except socket.error as err:
