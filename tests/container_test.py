@@ -2,11 +2,11 @@
 """Tests for example container."""
 
 # Standard Python Libraries
+import socket
 import time
 
 # Third-Party Libraries
 import dns.resolver
-import requests
 
 READY_MESSAGES = {
     "apache": "HTTP/1.1 200 OK",
@@ -24,13 +24,25 @@ def test_container_count(dockerc):
 
 def test_wait_for_ready_apache(apache_container):
     """Verify the apache container is running."""
-    url = "https://172.19.0.4"
-    r = requests.get(url)
+    host = "172.19.0.4"
+    port = 80
+    ready_message = READY_MESSAGES["apache"]
+    output = b""
 
-    if r.status_code != 200:
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((host, port))
+        s.sendall("GET / HTTP/1.1\r\nHost: 127.19.0.4\r\n\r\n")
+        output = s.recv(1024)
+
+    except socket.error as err:
+        raise Exception(f"Socket error {err}. ")
+
+    plain = output.decode("utf-8")
+    if ready_message not in plain:
         raise Exception(
             f"Container does not seem ready.  "
-            f"Expected status code 200, got {r.status_code}. "
+            f"Expected {ready_message} got {plain}. "
         )
 
 
