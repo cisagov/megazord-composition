@@ -3,3 +3,4 @@ dnspython
 pre-commit
 pytest
 pytest-dockerc
+requests
