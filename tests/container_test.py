@@ -29,15 +29,16 @@ def test_wait_for_ready_apache(apache_container):
     ready_message = READY_MESSAGES["apache"]
     output = b""
 
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(5)
-        s.connect((host, port))
-        s.sendall(b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n")
-        output = s.recv(1024)
+    while 1:
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.settimeout(5)
+            s.connect((host, port))
+            s.sendall(b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n")
+            output = s.recv(1024)
 
-    except socket.error as err:
-        raise Exception(f"Socket error {err}. ")
+        except socket.error:
+            pass
 
     plain = output.decode("utf-8")
 
