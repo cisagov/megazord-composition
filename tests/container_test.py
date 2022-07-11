@@ -28,8 +28,11 @@ def test_wait_for_ready_apache(apache_container):
     port = 80
     ready_message = READY_MESSAGES["apache"]
     output = b""
+    counter = 0
 
     while 1:
+        if counter == 10:
+            break
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             s.settimeout(5)
@@ -39,6 +42,7 @@ def test_wait_for_ready_apache(apache_container):
 
         except socket.error:
             pass
+        counter += 1
 
     plain = output.decode("utf-8")
 
