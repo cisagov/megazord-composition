@@ -32,7 +32,7 @@ def test_wait_for_ready_apache(apache_container):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((host, port))
-        s.sendall("GET / HTTP/1.1\r\nHost: 127.19.0.4\r\n\r\n")
+        s.sendall("GET / HTTP/1.1\r\nHost: 172.19.0.4\r\n\r\n")
         output = s.recv(1024)
 
     except socket.error as err:
