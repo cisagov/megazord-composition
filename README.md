@@ -4,7 +4,7 @@
 [![CodeQL](https://github.com/xvxd4sh/megazord-composition/workflows/CodeQL/badge.svg)](https://github.com/xvxd4sh/megazord-composition/actions/workflows/codeql-analysis.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/xvxd4sh/megazord-composition/badge.svg)](https://snyk.io/test/github/xvxd4sh/megazord-composition)
 
-This is a composition of the megazord docker containers.
+This is a docker composition of the megazord containers.
 
 ## Running ##
 
