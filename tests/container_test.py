@@ -39,6 +39,7 @@ def test_wait_for_ready_apache(apache_container):
         raise Exception(f"Socket error {err}. ")
 
     plain = output.decode("utf-8")
+
     if ready_message not in plain:
         raise Exception(
             f"Container does not seem ready.  "
