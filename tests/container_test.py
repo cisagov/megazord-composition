@@ -2,14 +2,13 @@
 """Tests for example container."""
 
 # Standard Python Libraries
-import socket
 import time
 
 # Third-Party Libraries
 import dns.resolver
 
 READY_MESSAGES = {
-    "apache": "HTTP/1.1 200 OK",
+    "apache": "resuming normal operations",
     "coredns": "CoreDNS-",
 }
 
@@ -24,29 +23,16 @@ def test_container_count(dockerc):
 
 def test_wait_for_ready_apache(apache_container):
     """Verify the apache container is running."""
-    web_request = b"GET / HTTP/1.1\r\nHOST:172.19.0.4\r\n\r\n"
+    TIMEOUT = 30
     ready_message = READY_MESSAGES["apache"]
-    host = "localhost"
-    output = b""
-    port = 80
-
-    while 1:  # we loop so if a connection is reset it is re-established
-        try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.connect((host, port))
-            s.send(web_request)
-            output = s.recv(1024)
-
-        except socket.error as err:
-            raise Exception(f"Socket error during setup: {err}.")
-
-        else:  # if no exception is raised, exit the loop
+    for i in range(TIMEOUT):
+        if ready_message in apache_container.logs().decode("utf-8"):
             break
-
-    if output == b"" or ready_message not in output.decode("utf-8"):
+        time.sleep(1)
+    else:
         raise Exception(
             f"Container does not seem ready. "
-            f"Expected {ready_message} in the output. "
+            f"Expected {ready_message} in log within {TIMEOUT} seconds."
         )
 
 
