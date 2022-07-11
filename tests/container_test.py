@@ -43,7 +43,8 @@ def test_wait_for_ready_apache(apache_container):
         else:  # if no exception is raised, exit the loop
             break
 
-    if output == b"" or ready_message not in output.decode("utf-8"):
+    print(output.decode("utf-8"))
+    if ready_message not in output.decode("utf-8"):
         raise Exception(
             f"Container does not seem ready. "
             f"Expected {ready_message} in the output. "
