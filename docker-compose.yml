@@ -30,7 +30,7 @@ services:
         mode: host
     volumes:
       - ./src/apache2/payload/:/var/www/uploads/
-      - ./src/apache2/src/:/var/www/html
+      - ./src/apache2/:/var/www/html
       - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
       - ./src/apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
     networks:
