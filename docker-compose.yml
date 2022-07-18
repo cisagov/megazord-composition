@@ -42,7 +42,7 @@ services:
     container_name: cobalt
     init: true
     restart: on-failure:5
-    command: bash -c "echo hello world"
+    command: bash -c "./opt/cobaltstrike/teamserver"
     ports:
       - "50050:50050"
     expose:
