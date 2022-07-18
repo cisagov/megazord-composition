@@ -37,6 +37,24 @@ services:
       appNetwork:
         ipv4_address: 172.19.0.4
 
+  cobalt:
+    image: debian:11
+    container_name: cobalt
+    init: true
+    restart: on-failure:5
+    command: bash -c "echo hello world"
+    ports:
+      - "50050:50050"
+    expose:
+      - "53"
+      - "443"
+      - "80"
+    volumes:
+      - /opt/cobaltstrike/:/opt/cobaltsrike/
+    networks:
+      appNetwork:
+        ipv4_address: 172.19.0.5
+
 networks:
   appNetwork:
     driver: bridge
