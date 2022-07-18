@@ -42,7 +42,7 @@ services:
     container_name: cobalt
     init: true
     restart: on-failure:5
-    command: bash -c "./opt/cobaltstrike/teamserver"
+    command: bash -c "/opt/cobaltstrike/teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
     ports:
       - "50050:50050"
     expose:
@@ -50,7 +50,7 @@ services:
       - "443"
       - "80"
     volumes:
-      - /opt/cobaltstrike/:/opt/cobaltsrike/
+      - /opt/cobaltstrike/:/opt/cobaltstrike/
     networks:
       appNetwork:
         ipv4_address: 172.19.0.5
