@@ -37,6 +37,30 @@ services:
       appNetwork:
         ipv4_address: 172.19.0.4
 
+  cobalt:
+    image: debian:11
+    container_name: cobalt
+    init: true
+    restart: on-failure:5
+    command: >
+      bash -c " apt-get update > /dev/null 2>&1 &&
+                apt-get install -y libfreetype6 > /dev/null 2>&1 &&
+                apt-get install -y default-jre default-jdk > /dev/null 2>1 &&
+                cd /opt/cobaltstrike/ &&
+                ./teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
+    ports:
+      - "50050:50050"
+    expose:
+      - "53"
+      - "443"
+      - "80"
+    volumes:
+      - /opt/cobaltstrike/:/opt/cobaltstrike/
+      - ./amazon.profile:/opt/cobaltstrike/amazon.profile
+    networks:
+      appNetwork:
+        ipv4_address: 172.19.0.5
+
 networks:
   appNetwork:
     driver: bridge
