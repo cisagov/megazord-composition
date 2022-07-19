@@ -60,7 +60,7 @@ services:
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
-      - ./amazon.profile:/opt/cobaltstrike/.amazon.profile
+      - ./amazon.profile:/opt/cobaltstrike/amazon.profile
     networks:
       appNetwork:
         ipv4_address: 172.19.0.5
