@@ -1,6 +1,6 @@
 #
 # Amazon browsing traffic profile
-# 
+#
 # Author: @harmj0y
 #
 
@@ -42,7 +42,7 @@ http-get {
 }
 
 http-post {
-    
+
     set uri "/N4215/adj/amzn.us.sr.aps";
 
     client {
