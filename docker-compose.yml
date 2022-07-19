@@ -44,12 +44,8 @@ services:
     restart: on-failure:5
     command: >
       bash -c " apt-get update > /dev/null 2>&1 &&
-                apt-get install -y curl libfreetype6 > /dev/null 2>&1 &&
-                cd /opt/ &&
-                curl -L -o openjdk.tar.gz https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz > /dev/null 2>&1 &&
-                mkdir jdk &&
-                tar zxf openjdk.tar.gz -C jdk --strip-components=1 &&
-                ln -sf /opt/jdk/bin/* /usr/local/bin/ &&
+                apt-get install -y libfreetype6 > /dev/null 2>&1 &&
+                apt-get install -y default-jre default-jdk > /dev/null 2>1 &&
                 cd /opt/cobaltstrike/ &&
                 ./teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
     ports:
