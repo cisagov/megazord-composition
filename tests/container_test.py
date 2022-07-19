@@ -10,6 +10,7 @@ import dns.resolver
 READY_MESSAGES = {
     "apache": "resuming normal operations",
     "coredns": "CoreDNS-",
+    "cobalt": "Cobalt Strike ready",
 }
 
 
@@ -60,3 +61,19 @@ def test_dns_query(coredns_container):
         resolver.query("google.com")
     except dns.resolver.NoNameservers as err:
         print(err)
+
+
+def test_wait_for_ready_cobalt(cobalt_container):
+    """Verify the cobalt strike container is running."""
+    TIMEOUT = 20
+    ready_message = READY_MESSAGES["cobalt"]
+    for i in range(TIMEOUT):
+        if ready_message in cobalt_container.logs().decode("utf-8"):
+            break
+        time.sleep(1)
+
+    else:
+        raise Exception(
+            f"Container does not seem ready.  "
+            f"Expected {ready_message} in the log within {TIMEOUT} seconds."
+        )
