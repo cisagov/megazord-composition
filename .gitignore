@@ -4,6 +4,7 @@
 
 ## Docker ##
 Dockerfile-x
+.env
 
 ## Python ##
 __pycache__
