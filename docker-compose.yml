@@ -42,7 +42,16 @@ services:
     container_name: cobalt
     init: true
     restart: on-failure:5
-    command: bash -c "/opt/cobaltstrike/teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
+    command: >
+      bash -c " apt-get update &&
+                apt-get install -y curl libfreetype6 &&
+                cd /opt/ &&
+                curl -L -o openjdk.tar.gz https://download.java.net/java/GA/jdk11/13/GPL/openjdk-11.0.1_linux-x64_bin.tar.gz &&
+                mkdir jdk &&
+                tar zxf openjdk.tar.gz -C jdk --strip-components=1 &&
+                ln -sf /opt/jdk/bin/* /usr/local/bin/ &&
+                cd /opt/cobaltstrike/ &&
+                ./teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
     ports:
       - "50050:50050"
     expose:
@@ -51,6 +60,7 @@ services:
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
+      - ./amazon.profile:/opt/cobaltstrike/.amazon.profile
     networks:
       appNetwork:
         ipv4_address: 172.19.0.5
