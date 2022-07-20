@@ -123,7 +123,7 @@ jobs:
         uses: mxschmitt/action-tmate@v3
         if: env.RUN_TMATE
   test:
-    runs-on: ubuntu-latest
+    runs-on: debian-latest
     steps:
       - uses: actions/checkout@v3
       - id: setup-python
