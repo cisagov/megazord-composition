@@ -45,7 +45,7 @@ http-post {
 
         header "Accept" "*/*";
         header "Host" "ocsp.verisign.com";
-        
+
         id {
             netbios;
             uri-append;
@@ -67,4 +67,3 @@ http-post {
         }
     }
 }
-

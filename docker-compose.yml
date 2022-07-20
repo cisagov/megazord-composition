@@ -8,7 +8,7 @@ services:
     hostname: coredns_megazord
     init: true
     restart: on-failure:5
-    ports: 
+    ports:
       - target: 53
         published: 53
         protocol: udp
@@ -49,7 +49,7 @@ services:
     restart: on-failure:5
     command: >
       bash -c " apt-get update > /dev/null 2>&1 &&
-                apt-get install -y libfreetype6 default-jdk > /dev/null 2>1 &&
+                apt-get install -y libfreetype6 default-jdk > /dev/null 2>&1 &&
                 cd /opt/cobaltstrike/ &&
                 ./teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
     ports:
