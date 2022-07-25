@@ -182,7 +182,11 @@ exposed port at 8080.
 
 ### Required ###
 
-There are no required environment variables.
+All the necessary environment variables are defined in the, untracked, .env file
+
+The environment variables are as follows:
+
+1)
 
 <!--
 | Name  | Purpose | Default |
