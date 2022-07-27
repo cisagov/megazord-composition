@@ -8,6 +8,11 @@ services:
     hostname: coredns_megazord
     init: true
     restart: on-failure:5
+    ports:
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
     volumes:
       - ./src/coredns/config:/root
     networks:
@@ -30,9 +35,8 @@ services:
         mode: host
     volumes:
       - ./src/apache2/payload/:/var/www/uploads/
-      - ./src/apache2/:/var/www/html
-      - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
-      - ./src/apache2/000-default.conf:/etc/apache2/sites-available/000-default.conf
+      - ./src/apache2/.htaccess:/var/www/html/.htaccess
+      - ./src/apache2/apache2.conf:/etc/apache2/apache.conf
     networks:
       appNetwork:
         ipv4_address: 172.19.0.4
@@ -43,21 +47,23 @@ services:
     init: true
     restart: on-failure:5
     command: >
-      bash -c " echo 'Cobalt Strike ready' &&
-                apt-get update > /dev/null 2>&1 &&
+      bash -c " apt-get update > /dev/null 2>&1 &&
                 apt-get install -y libfreetype6 > /dev/null 2>&1 &&
-                apt-get install -y default-jre default-jdk > /dev/null 2>1 &&
+                apt-get install -y default-jdk > /dev/null 2>1 &&
                 cd /opt/cobaltstrike/ &&
-                ./teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
+                ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
     ports:
-      - "50050:50050"
+      - target: 50050
+        published: 50050
+        protocol: tcp
+        mode: host
     expose:
       - "53"
       - "443"
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
-      - ./amazon.profile:/opt/cobaltstrike/amazon.profile
+      - ./${C2_PROFILE}:/opt/cobaltstrike/${C2_PROFILE}
     networks:
       appNetwork:
         ipv4_address: 172.19.0.5
