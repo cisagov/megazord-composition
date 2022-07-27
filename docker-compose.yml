@@ -8,6 +8,11 @@ services:
     hostname: coredns_megazord
     init: true
     restart: on-failure:5
+    ports:
+      - target: 53
+        published: 53
+        protocol: udp
+        mode: host
     volumes:
       - ./src/coredns/config:/root
     networks:
@@ -50,7 +55,10 @@ services:
                 cd /opt/cobaltstrike/ &&
                 ./teamserver ${IP} ${PASSWORD} ${C2PROFILE} ${KILLDATE}"
     ports:
-      - "50050:50050"
+      - target: 50050
+        published: 50050
+        protocol: tcp
+        mode: host
     expose:
       - "53"
       - "443"
