@@ -10,7 +10,7 @@ import dns.resolver
 READY_MESSAGES = {
     "apache": "resuming normal operations",
     "coredns": "CoreDNS-",
-    "cobalt": "Team server is up on"
+    "cobalt": "Team server is up on",
 }
 
 
