@@ -11,7 +11,6 @@ services:
     ports:
       - target: 53
         published: 53
-        host_ip: ${HOST_IP}
         protocol: udp
         mode: host
     volumes:
@@ -28,12 +27,10 @@ services:
     ports:
       - target: 80
         published: 80
-        host_ip: ${HOST_IP}
         protocol: tcp
         mode: host
       - target: 443
         published: 443
-        host_ip: ${HOST_IP}
         protocol: tcp
         mode: host
     volumes:
@@ -58,7 +55,6 @@ services:
     ports:
       - target: 50050
         published: 50050
-        host_ip: ${HOST_IP}
         protocol: tcp
         mode: host
     expose:
