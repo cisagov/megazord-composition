@@ -36,7 +36,7 @@ services:
     volumes:
       - ./src/apache2/payload/:/var/www/uploads/
       - ./src/apache2/.htaccess:/var/www/html/.htaccess
-      - ./src/apache2/apache2.conf:/etc/apache2/apache.conf
+      - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
     networks:
       appNetwork:
         ipv4_address: 172.19.0.4
