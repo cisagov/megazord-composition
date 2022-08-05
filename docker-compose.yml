@@ -37,6 +37,9 @@ services:
       - ./src/apache2/payload/:/var/www/uploads/
       - ./src/apache2/.htaccess:/var/www/html/.htaccess
       - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
+      - ./src/apache2/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
+      - ./certs/cobalt.cert:/etc/ssl/certs/cobalt.cert
+      - ./certs/cobalt.key:/etc/ssl/private/cobalt.key
     networks:
       appNetwork:
         ipv4_address: 172.19.0.4
@@ -63,6 +66,7 @@ services:
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
+      - ./wanurap.com.store:/opt/cobaltstrike/wanurap.com.store
       - ./${C2_PROFILE}:/opt/cobaltstrike/${C2_PROFILE}
     networks:
       appNetwork:
