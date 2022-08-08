@@ -66,7 +66,7 @@ services:
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
-      - ./wanurap.com.store:/opt/cobaltstrike/wanurap.com.store
+      - ./${KEYSTORE}:/opt/cobaltstrike/${KEYSTORE}
       - ./${C2_PROFILE}:/opt/cobaltstrike/${C2_PROFILE}
     networks:
       appNetwork:
