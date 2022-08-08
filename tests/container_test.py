@@ -63,17 +63,17 @@ def test_dns_query(coredns_container):
         print(err)
 
 
-def test_wait_for_ready_cobalt(cobalt_container):
-    """Verify the cobalt strike container is running."""
-    TIMEOUT = 20
-    ready_message = READY_MESSAGES["cobalt"]
-    for i in range(TIMEOUT):
-        if ready_message in cobalt_container.logs().decode("utf-8"):
-            break
-        time.sleep(1)
+# def test_wait_for_ready_cobalt(cobalt_container):
+#     """Verify the cobalt strike container is running."""
+#     TIMEOUT = 20
+#     ready_message = READY_MESSAGES["cobalt"]
+#     for i in range(TIMEOUT):
+#         if ready_message in cobalt_container.logs().decode("utf-8"):
+#             break
+#         time.sleep(1)
 
-    else:
-        raise Exception(
-            f"Container does not seem ready.  "
-            f"Expected {ready_message} in the log within {TIMEOUT} seconds."
-        )
+#     else:
+#         raise Exception(
+#             f"Container does not seem ready.  "
+#             f"Expected {ready_message} in the log within {TIMEOUT} seconds."
+#         )
