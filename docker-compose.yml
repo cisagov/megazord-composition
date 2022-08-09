@@ -50,7 +50,8 @@ services:
     init: true
     restart: on-failure:5
     command: >
-      bash -c " apt-get update > /dev/null 2>&1 &&
+      bash -c " echo 'teamserver starting, please do not close this window...' &&
+                apt-get update > /dev/null 2>&1 &&
                 apt-get install -y libfreetype6 > /dev/null 2>&1 &&
                 apt-get install -y default-jdk > /dev/null 2>1 &&
                 cd /opt/cobaltstrike/ &&
