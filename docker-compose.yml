@@ -37,6 +37,9 @@ services:
       - ./src/apache2/payload/:/var/www/uploads/
       - ./src/apache2/.htaccess:/var/www/html/.htaccess
       - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
+      - ./src/apache2/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
+      - ./src/secrets/cobalt.cert:/etc/ssl/certs/cobalt.cert
+      - ./src/secrets/cobalt.key:/etc/ssl/private/cobalt.key
     networks:
       appNetwork:
         ipv4_address: 172.19.0.4
@@ -47,7 +50,8 @@ services:
     init: true
     restart: on-failure:5
     command: >
-      bash -c " apt-get update > /dev/null 2>&1 &&
+      bash -c " echo 'teamserver starting, please do not close this window' &&
+                apt-get update > /dev/null 2>&1 &&
                 apt-get install -y libfreetype6 > /dev/null 2>&1 &&
                 apt-get install -y default-jdk > /dev/null 2>1 &&
                 cd /opt/cobaltstrike/ &&
@@ -63,6 +67,7 @@ services:
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
+      - ./${KEYSTORE}:/opt/cobaltstrike/${KEYSTORE}
       - ./${C2_PROFILE}:/opt/cobaltstrike/${C2_PROFILE}
     networks:
       appNetwork:
