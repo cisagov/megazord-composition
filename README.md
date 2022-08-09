@@ -10,92 +10,16 @@ This is a docker composition of the megazord containers.
 
 ### Running with Docker-Compose ###
 
-1. Create a `docker-compose.yml` file similar to the one below to use [Docker Compose](https://docs.docker.com/compose/).
-
-    ```yaml
-    ---
-    version: "3.7"
-
-    services:
-      coredns:
-      image: xvxd4sh/coredns:latest
-      container_name: coredns
-      hostname: coredns_megazord
-      init: true
-      restart: on-failure:5
-      ports:
-        - target: 53
-          published: 53
-          protocol: udp
-          mode: host
-      volumes:
-        - ./src/coredns/config:/root
-      networks:
-        appNetwork:
-          ipv4_address: 172.19.0.3
-
-    apache:
-      image: xvxd4sh/apache2:latest
-      container_name: apache
-      init: true
-      restart: on-failure:5
-      ports:
-        - target: 80
-          published: 80
-          protocol: tcp
-          mode: host
-        - target: 443
-          published: 443
-          protocol: tcp
-          mode: host
-      volumes:
-       - ./src/apache2/payload/:/var/www/uploads/
-       - ./src/apache2/.htaccess:/var/www/html/.htaccess
-       - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
-      networks:
-        appNetwork:
-          ipv4_address: 172.19.0.4
-
-    cobalt:
-      image: debian:11
-      container_name: cobalt
-      init: true
-      restart: on-failure:5
-      command: >
-        bash -c " apt-get update > /dev/null 2>&1 &&
-                  apt-get install -y libfreetype6 > /dev/null 2>&1 &&
-                  apt-get install -y default-jdk > /dev/null 2>1 &&
-                  cd /opt/cobaltstrike/ &&
-                  ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
-      ports:
-        - target: 50050
-          published: 50050
-          protocol: tcp
-          mode: host
-      expose:
-        - "53"
-        - "443"
-        - "80"
-      volumes:
-        - /opt/cobaltstrike/:/opt/cobaltstrike/
-        - ./${C2_PROFILE}:/opt/cobaltstrike/${C2_PROFILE}
-      networks:
-        appNetwork:
-          ipv4_address: 172.19.0.5
-
-  networks:
-    appNetwork:
-      driver: bridge
-      ipam:
-        driver: default
-        config:
-          - subnet: 172.19.0.0/16
-    ```
-
-1. Start the container and detach:
+1. Start the container in detached mode from the top-level directory of this repository:
 
     ```console
     docker compose up --detach
+    ```
+
+2. Stop the running containers from the top-level directory of this repository:
+
+    ```console
+    docker compose down
     ```
 
 ## Updating your container ##
@@ -113,24 +37,7 @@ This is a docker composition of the megazord containers.
     ```console
     docker compose up --detach
     ```
-<!--
-### Docker ###
-
-1. Stop the running container:
-
-    ```console
-    docker stop <container_id>
-    ```
-
-1. Pull the new image:
-
-    ```console
-    docker pull cisagov/example:0.0.1
-    ```
-
-1. Recreate and run the container by following the [previous instructions](#running-with-docker).
--->
-<!--
+<!--  
 ## Image tags ##
 
 The images of this container are tagged with [semantic
@@ -183,6 +90,8 @@ The environment variables are as follows:
 
 - KILLDATE -> the killdate for the teamserver, 2022-12-30 by default
 
+- KEYSTORE -> the name of the keystore holding the SSL certificate and key, wanurap.com.store by default
+
 <!--
 | Name  | Purpose | Default |
 |-------|---------|---------|
@@ -199,7 +108,9 @@ The environment variables are as follows:
 
 | Filename     | Purpose |
 |--------------|---------|
-| `quote.txt` | Replaces the secret stored in the example library's package data. |
+| `cobalt.cert` | Replace this file in the `src/secrets/` directory with the appropriate certificate |
+| `cobalt.key`  | Replace this file in the `src/secrets/` directory with the appropriate key |
+ 
 <!--
 ## Building from source ##
 
