@@ -34,7 +34,7 @@ services:
         protocol: tcp
         mode: host
     volumes:
-      - ./src/apache2/payload/:/var/www/uploads/
+      - /opt/cobaltstrike/uploads:/var/www/uploads/
       - ./src/apache2/.htaccess:/var/www/html/.htaccess
       - ./src/apache2/apache2.conf:/etc/apache2/apache2.conf
       - ./src/apache2/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
@@ -47,15 +47,18 @@ services:
   cobalt:
     image: debian:11
     container_name: cobalt
+    depends_on:
+      - apache
+      - coredns
     init: true
     restart: on-failure:5
     command: >
-      bash -c " echo 'teamserver starting, please do not close this window' &&
-                apt-get update > /dev/null 2>&1 &&
-                apt-get install -y libfreetype6 > /dev/null 2>&1 &&
-                apt-get install -y default-jdk > /dev/null 2>1 &&
-                cd /opt/cobaltstrike/ &&
-                ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
+      bash -c "echo 'teamserver starting, please do not close this window' &&
+               apt-get update > /dev/null 2>&1 &&
+               apt-get install -y libfreetype6 > /dev/null 2>&1 &&
+               apt-get install -y default-jdk > /dev/null 2>1 &&
+               cd /opt/cobaltstrike/ &&
+               ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
     ports:
       - target: 50050
         published: 50050
