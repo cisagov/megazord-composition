@@ -16,7 +16,7 @@ This is a docker composition of the megazord containers.
     docker compose up --detach
     ```
 
-2. Stop the running containers from the top-level directory of this repository:
+1. Stop the running containers from the top-level directory of this repository:
 
     ```console
     docker compose down
@@ -37,7 +37,7 @@ This is a docker composition of the megazord containers.
     ```console
     docker compose up --detach
     ```
-<!--  
+<!--
 ## Image tags ##
 
 The images of this container are tagged with [semantic
@@ -90,7 +90,8 @@ The environment variables are as follows:
 
 - KILLDATE -> the killdate for the teamserver, 2022-12-30 by default
 
-- KEYSTORE -> the name of the keystore holding the SSL certificate and key, wanurap.com.store by default
+- KEYSTORE -> the name of the keystore holding the SSL certificate and key,
+wanurap.com.store by default
 
 <!--
 | Name  | Purpose | Default |
@@ -110,7 +111,7 @@ The environment variables are as follows:
 |--------------|---------|
 | `cobalt.cert` | Replace this file in the `src/secrets/` directory with the appropriate certificate |
 | `cobalt.key`  | Replace this file in the `src/secrets/` directory with the appropriate key |
- 
+
 <!--
 ## Building from source ##
 
