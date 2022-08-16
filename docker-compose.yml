@@ -45,7 +45,7 @@ services:
         ipv4_address: 172.19.0.4
 
   cobalt:
-    image: debian:11
+    image: xvxd4sh/java-debian11
     container_name: cobalt
     depends_on:
       - apache
@@ -54,9 +54,6 @@ services:
     restart: on-failure:5
     command: >
       bash -c "echo 'teamserver starting, please do not close this window' &&
-               apt-get update > /dev/null 2>&1 &&
-               apt-get install -y libfreetype6 > /dev/null 2>&1 &&
-               apt-get install -y default-jdk > /dev/null 2>1 &&
                cd /opt/cobaltstrike/ &&
                ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
     ports:
