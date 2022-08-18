@@ -8,4 +8,4 @@ updated_dir="Alias $(grep 'PAYLOAD_DIR' < ~/megazord-composition/.env | cut -d '
 
 echo "Updated name of directory where payloads are hosted to- $updated_dir"
 
-sed -i  "s|${current_dir}|${updated_dir}|" ~/megazord-composition/src/apache2/apache2.conf
+sed -i "s|${current_dir}|${updated_dir}|" ~/megazord-composition/src/apache2/apache2.conf
