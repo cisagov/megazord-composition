@@ -40,6 +40,7 @@ services:
       - ./src/apache2/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
       - ./src/secrets/cobalt.cert:/etc/ssl/certs/cobalt.cert
       - ./src/secrets/cobalt.key:/etc/ssl/private/cobalt.key
+      - ./src/secrets/ca_bundle.crt:/etc/ssl/private/ca_bundle.crt
     networks:
       appNetwork:
         ipv4_address: 172.19.0.4
@@ -53,7 +54,7 @@ services:
     init: true
     restart: on-failure:5
     command: >
-      bash -c "echo 'teamserver starting, please do not close this window' &&
+      bash -c "echo 'Teamserver starting...w' &&
                cd /opt/cobaltstrike/ &&
                ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
     ports:
@@ -67,8 +68,6 @@ services:
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
-      - ./${KEYSTORE}:/opt/cobaltstrike/${KEYSTORE}
-      - ./${C2_PROFILE}:/opt/cobaltstrike/${C2_PROFILE}
     networks:
       appNetwork:
         ipv4_address: 172.19.0.5
