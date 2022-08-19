@@ -40,7 +40,7 @@ services:
       - ./src/apache2/default-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
       - ./src/secrets/cobalt.cert:/etc/ssl/certs/cobalt.cert
       - ./src/secrets/cobalt.key:/etc/ssl/private/cobalt.key
-      - ./src/secrets/ca-bundle.crt:/etc/ssl/private/ca_bundle.crt
+      - ./src/secrets/ca_bundle.crt:/etc/ssl/private/ca_bundle.crt
     networks:
       appNetwork:
         ipv4_address: 172.19.0.4
