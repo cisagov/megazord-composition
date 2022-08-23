@@ -67,11 +67,15 @@ echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
 # Generate new C2 profile via SourcePoint
 echo "[*] Generating new c2 profile with SourcePoint"
 
+# Generate psuedo-random number between 1-10 to pick a 
+# SourcePoint profile option randomly from the set (5, 7)
+profile_string=$(($(shuf -i 1-10 -n 1) <= 5 ? 5 : 7))
+
 if ! ./SourcePoint/SourcePoint -Host "$cloudfront_domain" \
   -Outfile "/opt/cobaltstrike/$c2_profile" \
   -Injector NtMapViewOfSection -Stage True \
-  -Password $password -Keystore $keystore -Profile 5 > /dev/null; then
-  echo -e " [\U2757] Error generating c2 profile${RESET}"
+  -Password $password -Keystore $keystore -Profile $profile_string > /dev/null; then
+  echo -e "[\U2757] Error generating c2 profile${RESET}"
   exit 1
 fi
 
@@ -86,7 +90,7 @@ original_profile=$(grep 'C2_PROFILE' \
 
 # replace original profile name in .env with new profile name
 if ! sed -i "s|${original_profile}|${c2_profile}|" megazord-composition/.env; then
-  echo -e "${RED_FG} [\U2757] Error adding new c2 profile name to .env${RESET}"
+  echo -e "${RED_FG}[\U2757] Error adding new c2 profile name to .env${RESET}"
   exit 1
 fi
 
@@ -99,9 +103,10 @@ if ! python3 cs2modrewrite/cs2modrewrite.py \
   -i "/opt/cobaltstrike/$c2_profile" -c "https://172.19.0.5" \
   -r "https://$redirect_location" \
   -o megazord-composition/src/apache2/.htaccess; then
-  echo -e "${RED_FG} [\U2757] Error generating .htaccess${RESET}"
+  echo -e "${RED_FG}[\U2757] Error generating .htaccess${RESET}"
   exit 1
 fi
+
 echo -e "${GREEN_FG}[\U2714] .htaccess generated at\
  ./megazord-composition/src/apache2/.htaccess${RESET}\n"
 
