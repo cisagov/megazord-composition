@@ -11,21 +11,20 @@ redirect_location=cisa.gov
 # COLORS
 RED_FG="\033[1;31m"
 GREEN_FG="\033[1;32m"
-BLUE_FG="\033[1;34m"
+#BLUE_FG="\033[1;34m"
 MAGENTA_FG="\033[1;35m"
-CYAN_FG="\033[1;36m"
+#CYAN_FG="\033[1;36m"
 RESET="\033[0m"
-
 
 # Update keystore name in .env
 original_keystore=$(grep 'KEYSTORE' \
-    < megazord-composition/.env | cut -d '=' -f 2)
+  < megazord-composition/.env | cut -d '=' -f 2)
 
 echo -e "[*] Adding keystore name to .env"
 
 if ! sed -i "s|${original_keystore}|${keystore}|" megazord-composition/.env; then
-    echo -e "${RED_FG} [\U2757] Error updating keystore name in .env${RESET}"
-    exit 1
+  echo -e "${RED_FG} [\U2757] Error updating keystore name in .env${RESET}"
+  exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] Added keystore to .env${RESET}\n"
@@ -34,10 +33,10 @@ echo -e "${GREEN_FG}[\U2714] Added keystore to .env${RESET}\n"
 echo -e "[*] Extracting ssl certificate"
 
 if ! keytool -export -alias $domain -keystore $keystore_path \
-    -storepass $password -rfc \
-    -file "megazord-composition/src/secrets/cobalt.cert" 2>&1; then
-    echo -e "${RED_FG} [\U2757] Error extracting certificate from keystore${RESET}"
-    exit 1
+  -storepass $password -rfc \
+  -file "megazord-composition/src/secrets/cobalt.cert" 2>&1; then
+  echo -e "${RED_FG} [\U2757] Error extracting certificate from keystore${RESET}"
+  exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] ${RESET}\n"
@@ -46,10 +45,10 @@ echo -e "${GREEN_FG}[\U2714] ${RESET}\n"
 echo "[*] Extracting key"
 
 if ! openssl pkcs12 -in $keystore_path -passin pass:$password \
-    -nodes -nocerts \
-    -out "megazord-composition/src/secrets/cobalt.key"; then
-    echo -e "${RED_FG} [\U2757] Error extracting key from keystore${RESET}"
-    exit 1
+  -nodes -nocerts \
+  -out "megazord-composition/src/secrets/cobalt.key"; then
+  echo -e "${RED_FG} [\U2757] Error extracting key from keystore${RESET}"
+  exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] Key extracted to\
@@ -59,8 +58,8 @@ echo -e "${GREEN_FG}[\U2714] Key extracted to\
 echo "[*] Extracting certificate bundle"
 
 keytool -list -rfc -keystore $keystore_path \
-    -storepass $password \
-    > megazord-composition/src/secrets/ca_bundle.crt
+  -storepass $password \
+  > megazord-composition/src/secrets/ca_bundle.crt
 
 echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
  ./megazord-composition/src/secrets/ca-bundle.crt${RESET}\n"
@@ -69,11 +68,11 @@ echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
 echo "[*] Generating new c2 profile with SourcePoint"
 
 if ! ./SourcePoint/SourcePoint -Host "$cloudfront_domain" \
-    -Outfile "/opt/cobaltstrike/$c2_profile" \
-    -Injector NtMapViewOfSection -Stage True \
-    -Password $password -Keystore $keystore > /dev/null; then
-    echo -e " [\U2757] Error generating c2 profile${RESET}"
-    exit 1
+  -Outfile "/opt/cobaltstrike/$c2_profile" \
+  -Injector NtMapViewOfSection -Stage True \
+  -Password $password -Keystore $keystore > /dev/null; then
+  echo -e " [\U2757] Error generating c2 profile${RESET}"
+  exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] C2 Profile generated at\
@@ -83,12 +82,12 @@ echo -e "${GREEN_FG}[\U2714] C2 Profile generated at\
 echo "[*] Adding c2 profile name to .env"
 
 original_profile=$(grep 'C2_PROFILE' \
-    < megazord-composition/.env | cut -d '=' -f 2)
+  < megazord-composition/.env | cut -d '=' -f 2)
 
 # replace original profile name in .env with new profile name
 if ! sed -i "s|${original_profile}|${c2_profile}|" megazord-composition/.env; then
-    echo -e "${RED_FG} [\U2757] Error adding new c2 profile name to .env${RESET}"
-    exit 1
+  echo -e "${RED_FG} [\U2757] Error adding new c2 profile name to .env${RESET}"
+  exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] Added c2 profile name to .env${RESET}\n"
@@ -97,11 +96,11 @@ echo -e "${GREEN_FG}[\U2714] Added c2 profile name to .env${RESET}\n"
 echo "[*] Generating .htaccess based on c2_profile"
 
 if ! python3 cs2modrewrite/cs2modrewrite.py \
-    -i "/opt/cobaltstrike/$c2_profile" -c "https://172.19.0.5" \
-    -r "https://$redirect_location" \
-    -o megazord-composition/src/apache2/.htaccess; then
-    echo -e "${RED_FG} [\U2757] Error generating .htaccess${RESET}"
-    exit 1
+  -i "/opt/cobaltstrike/$c2_profile" -c "https://172.19.0.5" \
+  -r "https://$redirect_location" \
+  -o megazord-composition/src/apache2/.htaccess; then
+  echo -e "${RED_FG} [\U2757] Error generating .htaccess${RESET}"
+  exit 1
 fi
 echo -e "${GREEN_FG}[\U2714] .htaccess generated at\
  ./megazord-composition/src/apache2/.htaccess${RESET}\n"
@@ -125,11 +124,11 @@ echo -e "\nPayload also accessible at https://${domain}${endpoint}/NAME_OF_PAYLO
 
 # Update PAYLOAD_DIR variable in .env with updated payload directory
 original_dir=$(grep 'PAYLOAD_DIR' \
-    < megazord-composition/.env | cut -d '=' -f 2)
+  < megazord-composition/.env | cut -d '=' -f 2)
 
 if ! sed -i "s|${original_dir}|${endpoint}|" megazord-composition/.env; then
-    echo -e "${RED_FG} [\U2757] Error adding new payload directory name to .env${RESET}"
-    exit 1
+  echo -e "${RED_FG} [\U2757] Error adding new payload directory name to .env${RESET}"
+  exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] Updated PAYLOAD_DIR in .env to new directory name${RESET}\n"
