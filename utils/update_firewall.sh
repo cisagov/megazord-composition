@@ -50,12 +50,11 @@ if [ "$1" = "ufw" ]; then
     until [ $idx -eq $num_lines ]; do
       echo 'y' | sudo ufw delete 1
     done
-
   elif [ "$2" = "on" ]; then
 
-    cat $awsips_filename | while read -r line; do
+    while read -r line; do
       sudo ufw insert 1 allow from "$line"
-    done
+    done < $awsips_filename
 
     for IP in "${ALLOW_IPS[@]}"; do
       sudo ufw insert 1 allow from "$IP"
@@ -78,7 +77,6 @@ elif [ "$1" = "iptables" ]; then
     until [ $idx -eq $num_lines ]; do
       sudo iptables -D DOCKER 1
     done
-
   elif [ "$2" = "on" ]; then
 
     for IP in "${ALLOW_IPS[@]}"; do
@@ -91,8 +89,8 @@ elif [ "$1" = "iptables" ]; then
 
     # Add rule to DOCKER chain that accepts incomming traffic
     # from cloudfront IPs
-    cat $awsips_filename | while read -r line; do
+    while read -r line; do
       sudo iptables -I DOCKER 3 -s "$line" -j ACCEPT
-    done
+    done < $awsips_filename
   fi
 fi
