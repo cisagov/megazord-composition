@@ -70,7 +70,7 @@ echo "[*] Generating new c2 profile with SourcePoint"
 if ! ./SourcePoint/SourcePoint -Host "$cloudfront_domain" \
   -Outfile "/opt/cobaltstrike/$c2_profile" \
   -Injector NtMapViewOfSection -Stage True \
-  -Password $password -Keystore $keystore > /dev/null; then
+  -Password $password -Keystore $keystore -Profile 5 > /dev/null; then
   echo -e " [\U2757] Error generating c2 profile${RESET}"
   exit 1
 fi
