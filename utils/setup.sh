@@ -67,7 +67,7 @@ echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
 # Generate new C2 profile via SourcePoint
 echo "[*] Generating new c2 profile with SourcePoint"
 
-# Generate psuedo-random number between 1-10 to pick a 
+# Generate psuedo-random number between 1-10 to pick a
 # SourcePoint profile option randomly from the set (5, 7)
 profile_string=$(($(shuf -i 1-10 -n 1) <= 5 ? 5 : 7))
 
