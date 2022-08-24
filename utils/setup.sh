@@ -1,11 +1,11 @@
 #!/bin/bash
 
 keystore=domain.store
-keystore_path=/opt/cobaltstrike/domain.store
+keystore_path=/tools/Malleable-C2-Profiles/normal/domain.store
 cloudfront_domain=domain.cloudfront.net
 domain=domain.com
 c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
-password=7WTF6WxTG8nPKzB5cXXV4t35CPPsUiXmZBSeXDndhjU=
+password=PASSWORD
 redirect_location=google.com
 
 # COLORS
@@ -63,6 +63,11 @@ keytool -list -rfc -keystore $keystore_path \
 
 echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
  ./megazord-composition/src/secrets/ca-bundle.crt${RESET}\n"
+
+# Copy keystore into cobaltstrike directory
+echo -e "[*] Copying the keystore into /opt/cobaltstrike"
+cp $keystore_path /opt/cobaltstrike/$keystore
+echo -e "${GREEN_FG}[\U2714] Keystore copied into /opt/cobaltstrike${RESET}\n"
 
 # Generate new C2 profile via SourcePoint
 echo "[*] Generating new c2 profile with SourcePoint"
