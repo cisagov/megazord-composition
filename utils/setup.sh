@@ -133,6 +133,7 @@ megazord-composition/src/coredns/config/Corefile\n"
 
 # Generate pseudo-random string to use as directory for payload hosting
 echo "[*] Renaming uploads directory with pseudo-random string"
+
 endpoint="/$(openssl rand -hex 6)/panda"
 new_line="Alias ${endpoint} \"/var/www/uploads\""
 
@@ -141,12 +142,13 @@ uploads=$(grep 'Alias' \
 
 sed -i "s|${uploads}|${new_line}|" \
   megazord-composition/src/apache2/apache2.conf
+
 echo -e "${GREEN_FG}[\U2714] Payload endpoint updated to:\
  ${MAGENTA_FG}${endpoint}${RESET}\n"
 
 echo -e "Payloads hosted at:"
 echo -e "${MAGENTA_FG}https://${cloudfront_domain}${endpoint}/NAME_OF_PAYLOAD${RESET}"
-echo -e "\nPayload also accessible at https://${domain}${endpoint}/NAME_OF_PAYLOAD"
+echo -e "\nPayload also accessible at ${MAGENTA_FG}https://${domain}${endpoint}/NAME_OF_PAYLOAD${RESET}\n"
 
 # Update PAYLOAD_DIR variable in .env with updated payload directory
 original_dir=$(grep 'PAYLOAD_DIR' \
