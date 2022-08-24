@@ -1,12 +1,12 @@
 #!/bin/bash
 
-keystore=wanurap.com.store
-keystore_path=/opt/cobaltstrike/wanurap.com.store
-cloudfront_domain=d3815g0hmfkigc.cloudfront.net
-domain=wanurap.com
+keystore=domain.store
+keystore_path=/opt/cobaltstrike/domain.store
+cloudfront_domain=domain.cloudfront.net
+domain=domain.com
 c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
 password=7WTF6WxTG8nPKzB5cXXV4t35CPPsUiXmZBSeXDndhjU=
-redirect_location=cisa.gov
+redirect_location=google.com
 
 # COLORS
 RED_FG="\033[1;31m"
@@ -23,7 +23,7 @@ original_keystore=$(grep 'KEYSTORE' \
 echo -e "[*] Adding keystore name to .env"
 
 if ! sed -i "s|${original_keystore}|${keystore}|" megazord-composition/.env; then
-  echo -e "${RED_FG} [\U2757] Error updating keystore name in .env${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error updating keystore name in .env${RESET}"
   exit 1
 fi
 
@@ -35,7 +35,7 @@ echo -e "[*] Extracting ssl certificate"
 if ! keytool -export -alias $domain -keystore $keystore_path \
   -storepass $password -rfc \
   -file "megazord-composition/src/secrets/cobalt.cert" 2>&1; then
-  echo -e "${RED_FG} [\U2757] Error extracting certificate from keystore${RESET}"
+  echo -e "${RED_FG} [ \U2757] Error extracting certificate from keystore${RESET}"
   exit 1
 fi
 
@@ -47,7 +47,7 @@ echo "[*] Extracting key"
 if ! openssl pkcs12 -in $keystore_path -passin pass:$password \
   -nodes -nocerts \
   -out "megazord-composition/src/secrets/cobalt.key"; then
-  echo -e "${RED_FG} [\U2757] Error extracting key from keystore${RESET}"
+  echo -e "${RED_FG} [ \U2757] Error extracting key from keystore${RESET}"
   exit 1
 fi
 
@@ -75,7 +75,7 @@ if ! ./SourcePoint/SourcePoint -Host "$cloudfront_domain" \
   -Outfile "/opt/cobaltstrike/$c2_profile" \
   -Injector NtMapViewOfSection -Stage True \
   -Password $password -Keystore $keystore -Profile $profile_string > /dev/null; then
-  echo -e "[\U2757] Error generating c2 profile${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error generating c2 profile${RESET}"
   exit 1
 fi
 
@@ -90,7 +90,7 @@ original_profile=$(grep 'C2_PROFILE' \
 
 # replace original profile name in .env with new profile name
 if ! sed -i "s|${original_profile}|${c2_profile}|" megazord-composition/.env; then
-  echo -e "${RED_FG}[\U2757] Error adding new c2 profile name to .env${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error adding new c2 profile name to .env${RESET}"
   exit 1
 fi
 
@@ -103,7 +103,7 @@ if ! python3 cs2modrewrite/cs2modrewrite.py \
   -i "/opt/cobaltstrike/$c2_profile" -c "https://172.19.0.5" \
   -r "https://$redirect_location" \
   -o megazord-composition/src/apache2/.htaccess; then
-  echo -e "${RED_FG}[\U2757] Error generating .htaccess${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error generating .htaccess${RESET}"
   exit 1
 fi
 
@@ -132,7 +132,7 @@ original_dir=$(grep 'PAYLOAD_DIR' \
   < megazord-composition/.env | cut -d '=' -f 2)
 
 if ! sed -i "s|${original_dir}|${endpoint}|" megazord-composition/.env; then
-  echo -e "${RED_FG} [\U2757] Error adding new payload directory name to .env${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error adding new payload directory name to .env${RESET}"
   exit 1
 fi
 
