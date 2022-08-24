@@ -54,7 +54,7 @@ services:
     init: true
     restart: on-failure:5
     command: >
-      bash -c "echo 'Teamserver starting...w' &&
+      bash -c "echo 'Teamserver starting...' &&
                cd /opt/cobaltstrike/ &&
                ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
     ports:
