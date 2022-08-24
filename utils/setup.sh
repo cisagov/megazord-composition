@@ -115,6 +115,22 @@ fi
 echo -e "${GREEN_FG}[\U2714] .htaccess generated at\
  ./megazord-composition/src/apache2/.htaccess${RESET}\n"
 
+# Create new Corefile for Coredns configuration
+echo -e "[*] Creating Corefile using $domain in\
+ megazord-composition/src/coredns/config"
+
+cat > megazord-composition/src/coredns/config/Corefile << CORE_BLOCK
+
+.:53 {
+	forward . 8.8.8.8
+}
+"$domain" {
+	forward . 172.19.0.5:53
+}
+CORE_BLOCK
+echo -e "${GREEN_FG}[\U2714] Corefile created at\
+megazord-composition/src/coredns/config/Corefile\n"
+
 # Generate pseudo-random string to use as directory for payload hosting
 echo "[*] Renaming uploads directory with pseudo-random string"
 endpoint="/$(openssl rand -hex 6)/panda"
