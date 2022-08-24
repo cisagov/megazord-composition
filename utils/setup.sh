@@ -1,12 +1,17 @@
 #!/bin/bash
 
-keystore=wanurap.com.store
-keystore_path=/opt/cobaltstrike/wanurap.com.store
-cloudfront_domain=d3815g0hmfkigc.cloudfront.net
-domain=wanurap.com
+# Variables to modify to fit current environment specifications
+domain=domain.com
+cloudfront_domain=domain.cloudfront.net
+password=PASSWORD
+redirect_location=google.com
+#####
+
+# DO NOT modify the following variables
+keystore="${domain}.store"
+keystore_path="/tools/Malleable-C2-Profiles/normal/${keystore}"
 c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
-password=7WTF6WxTG8nPKzB5cXXV4t35CPPsUiXmZBSeXDndhjU=
-redirect_location=cisa.gov
+######
 
 # COLORS
 RED_FG="\033[1;31m"
@@ -23,7 +28,7 @@ original_keystore=$(grep 'KEYSTORE' \
 echo -e "[*] Adding keystore name to .env"
 
 if ! sed -i "s|${original_keystore}|${keystore}|" megazord-composition/.env; then
-  echo -e "${RED_FG} [\U2757] Error updating keystore name in .env${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error updating keystore name in .env${RESET}"
   exit 1
 fi
 
@@ -35,7 +40,7 @@ echo -e "[*] Extracting ssl certificate"
 if ! keytool -export -alias $domain -keystore $keystore_path \
   -storepass $password -rfc \
   -file "megazord-composition/src/secrets/cobalt.cert" 2>&1; then
-  echo -e "${RED_FG} [\U2757] Error extracting certificate from keystore${RESET}"
+  echo -e "${RED_FG} [ \U2757] Error extracting certificate from keystore${RESET}"
   exit 1
 fi
 
@@ -47,7 +52,7 @@ echo "[*] Extracting key"
 if ! openssl pkcs12 -in $keystore_path -passin pass:$password \
   -nodes -nocerts \
   -out "megazord-composition/src/secrets/cobalt.key"; then
-  echo -e "${RED_FG} [\U2757] Error extracting key from keystore${RESET}"
+  echo -e "${RED_FG} [ \U2757] Error extracting key from keystore${RESET}"
   exit 1
 fi
 
@@ -64,6 +69,11 @@ keytool -list -rfc -keystore $keystore_path \
 echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
  ./megazord-composition/src/secrets/ca-bundle.crt${RESET}\n"
 
+# Copy keystore into cobaltstrike directory
+echo -e "[*] Copying the keystore into /opt/cobaltstrike"
+cp $keystore_path /opt/cobaltstrike/$keystore
+echo -e "${GREEN_FG}[\U2714] Keystore copied into /opt/cobaltstrike${RESET}\n"
+
 # Generate new C2 profile via SourcePoint
 echo "[*] Generating new c2 profile with SourcePoint"
 
@@ -75,7 +85,7 @@ if ! ./SourcePoint/SourcePoint -Host "$cloudfront_domain" \
   -Outfile "/opt/cobaltstrike/$c2_profile" \
   -Injector NtMapViewOfSection -Stage True \
   -Password $password -Keystore $keystore -Profile $profile_string > /dev/null; then
-  echo -e "[\U2757] Error generating c2 profile${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error generating c2 profile${RESET}"
   exit 1
 fi
 
@@ -90,7 +100,7 @@ original_profile=$(grep 'C2_PROFILE' \
 
 # replace original profile name in .env with new profile name
 if ! sed -i "s|${original_profile}|${c2_profile}|" megazord-composition/.env; then
-  echo -e "${RED_FG}[\U2757] Error adding new c2 profile name to .env${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error adding new c2 profile name to .env${RESET}"
   exit 1
 fi
 
@@ -103,15 +113,32 @@ if ! python3 cs2modrewrite/cs2modrewrite.py \
   -i "/opt/cobaltstrike/$c2_profile" -c "https://172.19.0.5" \
   -r "https://$redirect_location" \
   -o megazord-composition/src/apache2/.htaccess; then
-  echo -e "${RED_FG}[\U2757] Error generating .htaccess${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error generating .htaccess${RESET}"
   exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] .htaccess generated at\
  ./megazord-composition/src/apache2/.htaccess${RESET}\n"
 
+# Create new Corefile for Coredns configuration
+echo -e "[*] Creating Corefile using $domain in\
+ megazord-composition/src/coredns/config"
+
+cat > megazord-composition/src/coredns/config/Corefile << CORE_BLOCK
+
+.:53 {
+	forward . 8.8.8.8
+}
+"$domain" {
+	forward . 172.19.0.5:53
+}
+CORE_BLOCK
+echo -e "${GREEN_FG}[\U2714] Corefile created at\
+megazord-composition/src/coredns/config/Corefile${RESET}\n"
+
 # Generate pseudo-random string to use as directory for payload hosting
 echo "[*] Renaming uploads directory with pseudo-random string"
+
 endpoint="/$(openssl rand -hex 6)/panda"
 new_line="Alias ${endpoint} \"/var/www/uploads\""
 
@@ -120,19 +147,20 @@ uploads=$(grep 'Alias' \
 
 sed -i "s|${uploads}|${new_line}|" \
   megazord-composition/src/apache2/apache2.conf
+
 echo -e "${GREEN_FG}[\U2714] Payload endpoint updated to:\
  ${MAGENTA_FG}${endpoint}${RESET}\n"
 
 echo -e "Payloads hosted at:"
 echo -e "${MAGENTA_FG}https://${cloudfront_domain}${endpoint}/NAME_OF_PAYLOAD${RESET}"
-echo -e "\nPayload also accessible at https://${domain}${endpoint}/NAME_OF_PAYLOAD"
+echo -e "\nPayload also accessible at ${MAGENTA_FG}https://${domain}${endpoint}/NAME_OF_PAYLOAD${RESET}\n"
 
 # Update PAYLOAD_DIR variable in .env with updated payload directory
 original_dir=$(grep 'PAYLOAD_DIR' \
   < megazord-composition/.env | cut -d '=' -f 2)
 
 if ! sed -i "s|${original_dir}|${endpoint}|" megazord-composition/.env; then
-  echo -e "${RED_FG} [\U2757] Error adding new payload directory name to .env${RESET}"
+  echo -e "${RED_FG}[ \U2757] Error adding new payload directory name to .env${RESET}"
   exit 1
 fi
 
