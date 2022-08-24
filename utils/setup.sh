@@ -1,12 +1,17 @@
 #!/bin/bash
 
-keystore=domain.store
-keystore_path=/tools/Malleable-C2-Profiles/normal/domain.store
-cloudfront_domain=domain.cloudfront.net
+# Variables to modify to fit current environment specifications
 domain=domain.com
-c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
+cloudfront_domain=domain.cloudfront.net
 password=PASSWORD
 redirect_location=google.com
+#####
+
+# DO NOT modify the following variables
+keystore="${domain}.store"
+keystore_path="/tools/Malleable-C2-Profiles/normal/${keystore}"
+c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
+######
 
 # COLORS
 RED_FG="\033[1;31m"
@@ -129,7 +134,7 @@ cat > megazord-composition/src/coredns/config/Corefile << CORE_BLOCK
 }
 CORE_BLOCK
 echo -e "${GREEN_FG}[\U2714] Corefile created at\
-megazord-composition/src/coredns/config/Corefile\n"
+megazord-composition/src/coredns/config/Corefile${RESET}\n"
 
 # Generate pseudo-random string to use as directory for payload hosting
 echo "[*] Renaming uploads directory with pseudo-random string"
