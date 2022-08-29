@@ -1,29 +1,31 @@
 #! /bin/bash
 
-USAGE="\
-
-This script can be used to modify ufw or iptables rules to limit access
-to the teamserver to hosts with a cloudfront IP and hosts listed in a
-file.
-
-Usage:
-$0 (ufw | iptables) (on | off) (IP_LIST_FILE)
-
-         ufw - update ufw tables
-    iptables - updates iptables DOCKER chain
-
-          on - Adds rules to the firewall
-         off - Removes rules from firewall
-
-IP_LIST_FILE - File containing IP addresses of hosts to grant access to teamserver
-"
-
-# Update this list to contain IPs of hosts you want to be
+### IP ALLOW LIST ###
+# Update this list with IPs of hosts you want to be
 # able to communicate with the teamserver
 ALLOW_IPS=(
   10.224.80.9
   10.224.80.230
 )
+###
+
+
+USAGE="\
+
+This script can be used to modify iptables rules to limit teamserver access
+to hosts with a cloudfront IP and hosts listed in a file.
+
+Usage:
+$0 (on | off | all)
+
+          on - Adds rules to the firewall
+	  	Specifically the rules added will accept traffic from all cloudfront IPs,
+		all hosts in the ALLOW_IPS list, and drops all other
+         off - Removes rules from firewall that were added by the script
+	 all - Adds a single rule to the DOCKER chain to drop all external traffic
+
+"
+
 
 if [ $# = 0 ]; then
   echo "$USAGE"
