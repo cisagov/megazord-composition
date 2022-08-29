@@ -9,7 +9,6 @@ ALLOW_IPS=(
 )
 ###
 
-
 USAGE="\
 
 This script can be used to modify iptables rules to limit teamserver access
@@ -25,7 +24,6 @@ $0 (on | off | all)
 	 all - Adds a single rule to the DOCKER chain to drop all external traffic
 
 "
-
 
 if [ $# = 0 ]; then
   echo "$USAGE"
