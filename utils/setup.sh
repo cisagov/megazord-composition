@@ -126,6 +126,7 @@ echo -e "[*] Creating Corefile using $domain in\
  /tools/megazord-composition/src/coredns/config"
 
 cat > /tools/megazord-composition/src/coredns/config/Corefile << CORE_BLOCK
+
 .:53 {
 	forward . 8.8.8.8
 }
@@ -133,6 +134,7 @@ cat > /tools/megazord-composition/src/coredns/config/Corefile << CORE_BLOCK
 	forward . 172.19.0.5:53
 }
 CORE_BLOCK
+
 echo -e "${GREEN_FG}[\U2714] Corefile created at\
 /tools/megazord-composition/src/coredns/config/Corefile${RESET}\n"
 
