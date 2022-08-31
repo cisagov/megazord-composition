@@ -56,7 +56,7 @@ services:
     command: >
       bash -c "echo 'Teamserver starting...' &&
                cd /opt/cobaltstrike/ &&
-               ./teamserver ${C2_IP} ${PASSWORD} ${C2_PROFILE} ${KILLDATE}"
+               ./teamserver ${C2_IP} ${C2_PASSWORD} ${C2_PROFILE} ${KILLDATE}"
     ports:
       - target: 50050
         published: 50050
