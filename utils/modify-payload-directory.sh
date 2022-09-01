@@ -19,13 +19,15 @@ updated_line="Alias $updated_dir \"/var/www/uploads\""
 
 echo "[*] Updating hosted payload directory to: $updated_dir"
 
+# replace old uploads directory name with new name
 sed -i "s|${current_dir}|${updated_line}|" \
   /tools/megazord-composition/src/apache2/apache2.conf
 
 echo -e "${GREEN_FG}[\U2714] Updated name of payload directory to:${RESET}\
  ${MAGENTA_FG}$updated_dir${RESET}\n"
 
-if sudo docker ps | grep 'apache'; then
+# If apache is already running, restart the container
+if sudo docker ps | grep 'apache' > /dev/null; then
   echo "[*] Restarting apache container"
 
   sudo docker restart apache
