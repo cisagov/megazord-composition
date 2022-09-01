@@ -37,14 +37,14 @@ echo -e "${GREEN_FG}[\U2714] Added keystore to .env${RESET}\n"
 # Extract certificate for domain from keystore
 echo -e "[*] Extracting ssl certificate"
 
-if ! keytool -export -alias $domain -keystore $keystore_path \
+if ! res=$(keytool -export -alias $domain -keystore $keystore_path \
   -storepass $keystore_password -rfc \
-  -file "/tools/megazord-composition/src/secrets/cobalt.cert" 2>&1; then
-  echo -e "${RED_FG} [ \U2757] Error extracting certificate from keystore${RESET}"
+  -file "/tools/megazord-composition/src/secrets/cobalt.cert" 2>&1); then
+  echo -e "${RED_FG} [ \U2757] $res${RESET}"
   exit 1
 fi
 
-echo -e "${GREEN_FG}[\U2714] ${RESET}\n"
+echo -e "${GREEN_FG}[\U2714] $res${RESET}\n"
 
 # Extract key from keystore
 echo "[*] Extracting key"
