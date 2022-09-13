@@ -56,18 +56,21 @@ services:
     command: >
       bash -c "echo 'Teamserver starting...' &&
                cd /opt/cobaltstrike/ &&
+               ((sleep 10 && ./agscript 172.19.0.5 50050 Alpha_5 ${C2_PASSWORD} cnas/megazord.cna ) &) &&
                ./teamserver ${C2_IP} ${C2_PASSWORD} ${C2_PROFILE} ${KILLDATE}"
     ports:
       - target: 50050
         published: 50050
         protocol: tcp
         mode: host
+      - "5000-5100:5000-5100"
     expose:
       - "53"
       - "443"
       - "80"
     volumes:
       - /opt/cobaltstrike/:/opt/cobaltstrike/
+      - /tools/megazord-composition/.env:/.env
     networks:
       appNetwork:
         ipv4_address: 172.19.0.5
