@@ -1,22 +1,35 @@
+
 on event_newsite {
+    local('$siteurl');
     $siteurl = split(" ", $2)[-1];
     cmdcurl($siteurl);
-    elog("$filename reachable @ $cloudfront_domain/$payload_dir/$filename");
+    $payload_dir = get_env_var("PAYLOAD");
 }
 
 sub cmdcurl {
     $url = $1; 
     
-    $filename = split("/", $url)[-1];
-
-    if (-exists "/opt/cobaltstrike/uploads/$filename") {
+    #$filename = split("/", $url)[-1];
+    
+    $filename = split(":80", $url)[-1];
+    
+    if (-exists "/opt/cobaltstrike/uploads $+ $filename") {
+        elog("$filename reachable @ https:// $+ $cloudfront_domain $+ $payload_dir $+ $filename");
         return;
     }
 
-    $filename = split(":80", $url)[-1];
+    
+    elog("$filename reachable @ https:// $+ $cloudfront_domain $+ $payload_dir $+ $filename");
 
     $output = "/opt/cobaltstrike/uploads $+ $filename";
-    $cmd = "curl -v 172.19.0.5:80$filename -o $output --create-dirs";
+
+    # Get parent directory of this file
+    $directories = getFileParent($output);
+
+    # Create any directories
+    mkdir($directories);
+
+    $cmd = "curl -v 172.19.0.5:80$filename -o $output";
     
     $process = exec("$cmd");
     if (checkError($error)) {
@@ -33,3 +46,12 @@ sub cmdcurl {
 }
 
 
+sub get_env_var {
+    $process = exec("grep $1 /.env");
+    $data  = readb($process, -1);
+    closef($process);
+
+    $dir = split('=', $data)[-1];
+    
+    return replace($dir, "\n", "");
+}

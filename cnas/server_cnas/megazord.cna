@@ -5,15 +5,15 @@ include(script_resource("listener_setup.cna"));
 include(script_resource("kill_sites.cna"));
 include(script_resource("host_sites.cna"));
 
-$cloudfront_domain = "cf.net";
+$cloudfront_domain = "domain.cloudfront.net";
 $c2_domain = "domain.com";
-$payload_dir = "something/another";
+$payload_dir = "/something/else";
 $uploads_dir = '/opt/cobaltstrike/uploads';
 
 on ready {
     listener_setup();
     host_sites($uploads_dir);
-    $cloudfront_domain = get_env_var("");
+    $payload_dir = get_env_var("PAYLOAD");
 }
 
 on event_private {
@@ -42,9 +42,3 @@ on event_private {
     }
 }
 
-sub get_env_var {
-    $process = exec("grep PAYLOAD /.env");
-    $data  = readb($process, -1);
-    closef($process);
-    $payload_dir = $data;
-}
