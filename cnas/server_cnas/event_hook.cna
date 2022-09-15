@@ -7,18 +7,18 @@ on event_newsite {
 }
 
 sub cmdcurl {
-    $url = $1; 
-    
+    $url = $1;
+
     #$filename = split("/", $url)[-1];
-    
+
     $filename = split(":80", $url)[-1];
-    
+
     if (-exists "/opt/cobaltstrike/uploads $+ $filename") {
         elog("$filename reachable @ https:// $+ $cloudfront_domain $+ $payload_dir $+ $filename");
         return;
     }
 
-    
+
     elog("$filename reachable @ https:// $+ $cloudfront_domain $+ $payload_dir $+ $filename");
 
     $output = "/opt/cobaltstrike/uploads $+ $filename";
@@ -30,7 +30,7 @@ sub cmdcurl {
     mkdir($directories);
 
     $cmd = "curl -v 172.19.0.5:80$filename -o $output";
-    
+
     $process = exec("$cmd");
     if (checkError($error)) {
         warn($error);
@@ -38,10 +38,10 @@ sub cmdcurl {
     else {
         # sleep to give curl a chance to download file
         sleep( 1 * 1000); #sleep 1 seconds
-        
+
         println("$filename hosted at:  $url");
     }
-    
+
     closef($process);
 }
 
@@ -52,6 +52,6 @@ sub get_env_var {
     closef($process);
 
     $dir = split('=', $data)[-1];
-    
+
     return replace($dir, "\n", "");
 }

@@ -7,7 +7,7 @@ include(script_resource("kill_sites.cna"));
 
 on event_private {
 	# $1 - message author
-	# $2 - message recipient 
+	# $2 - message recipient
 	# $3 - message contents
 	# $4 - timestamp
 

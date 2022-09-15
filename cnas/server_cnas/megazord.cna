@@ -25,12 +25,12 @@ on event_private {
     local('$username', '@msg_parts', '@options');
 
     $username = "Alpha_5";
- 
+
     if ($2 eq $username) {
         @msg_parts = split(' ', $3);
         $cmd = @msg_parts[0];
         @options = sublist(@msg_parts, 1);
-        
+
         if ($cmd eq "kill_site") {
             kill_site(@options);
         }
@@ -41,4 +41,3 @@ on event_private {
 
     }
 }
-

@@ -1,18 +1,18 @@
 include(script_resource("host_files.cna"));
 
 sub megazord_host_dir {
-	prompt_directory_open("Select Payload Directory", $null, false, 
+	prompt_directory_open("Select Payload Directory", $null, false,
 		&host_dir_callback);
 }
 
 sub host_dir_callback {
 	# $1 - path to selected directory
-	
+
 	local('@dir_contents', '$file');
 
 	if (-isDir $1) {
 		@dir_contents = ls($1);
-	
+
 		foreach $file (@dir_contents) {
 			if ((!-isHidden $file) || (!-isDir $file)) {
 				hostfile($file);

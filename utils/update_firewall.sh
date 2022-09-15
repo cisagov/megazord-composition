@@ -75,7 +75,7 @@ elif [ "$1" = "off" ]; then
 elif [ "$1" = "on" ]; then
   # clear existing rules in the DOCKER chain
   sudo iptables -F DOCKER
-  
+
   # Drop  all others. Added here so this rule immediately follows
   # all cloudfront IPs and the IPs in the ALLOW_IPS list
   sudo iptables -I DOCKER 1 -j DROP

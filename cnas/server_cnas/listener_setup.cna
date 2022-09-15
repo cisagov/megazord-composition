@@ -9,13 +9,13 @@ sub listener_setup {
 
         $listener_info = listener_info($listener);
 
-        if (($listener_info['port'] == '443') && 
-            ($listener_info['host'] eq $cloudfront_domain)) 
+        if (($listener_info['port'] == '443') &&
+            ($listener_info['host'] eq $cloudfront_domain))
         {
             $https = 't';
         }
-        else if (($listener_info['port'] == '53') && 
-            ($listener_info['host'] eq $c2_domain)) 
+        else if (($listener_info['port'] == '53') &&
+            ($listener_info['host'] eq $c2_domain))
         {
             $dns = 't';
         }

@@ -25,7 +25,6 @@ sub hostfile {
 
     $filename = split("$uploads_dir", $filepath)[-1];
 
-    site_host("172.19.0.5", 80, "$filename", $beacon_data, 
+    site_host("172.19.0.5", 80, "$filename", $beacon_data,
         "automatic", "$filename", false);
 }
-

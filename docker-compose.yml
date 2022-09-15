@@ -53,8 +53,8 @@ services:
       - coredns
     init: true
     restart: on-failure:5
-    entrypoint: 
-      - ./entrypoint.sh 
+    entrypoint:
+      - ./entrypoint.sh
       - ${C2_IP}
       - ${C2_PASSWORD}
       - ${C2_PROFILE}
