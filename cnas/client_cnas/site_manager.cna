@@ -1,0 +1,80 @@
+
+#########################################################################
+#									#
+#	Under Construction						#
+#		Use as reference for creating tables, but this		#
+#		implementation is not complete, the layout needs	#
+#		improving.						#
+#									#
+#########################################################################
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.*; 
+
+sub megazord_site_manager {
+	$frame = [new JFrame];
+	[$frame setTitle: "Super cool Table Bro"];
+	[$frame setLocationByPlatform: true];
+	[$frame setMinimumSize: [new Dimension: 700, 500]];
+
+	$maincontainer = [new JPanel];
+	#[$maincontainer setLayout: [new GridLayout: 2, 1, 0, 0]];
+	#$mainlayout = [new BorderLayout];
+	$mainlayout = [new GridBagLayout];
+	[$mainlayout setHgap: 10];
+	[$mainlayout setVgap: 10];
+
+	[$maincontainer setLayout: $mainlayout];
+
+	#[$maincontainer add: [new JScrollPane]];
+
+	#[$frame setLayout: [new FlowLayout]];
+	
+	@columns = @("Filename", "URI", "md5", "sha256");
+	@data = @(
+		  @("beacon.exe", "cloudfront.net/panda/beacon.exe", "fdsaoihgioahg", "oqiwehflaidhfslisuadhg")
+		);
+
+	$table = [new JTable: @data, @columns];
+
+	$tablecontainer = [new JPanel];
+	[$tablecontainer setLayout: [new FlowLayout]];
+
+	$tablepane = [new JScrollPane: $table];
+	[$tablepane setLayout: [new FlowLayout: [FlowLayout LEADING], 10, 100]];
+
+	[$tablecontainer add: $tablepane];
+
+	$c = [new GridBagConstraints];
+	[$c fill: [GridBagConstraints BOTH]];
+	#[$c gridx: 0];
+	#[$c gridy: 0];
+	[$c gridwidth: [GridBagConstraints REMAINDER]];
+
+
+	[$maincontainer add: $tablecontainer, $c];
+
+	$buttoncontainer = [new JPanel];
+	[$buttoncontainer setLayout: [new FlowLayout: [FlowLayout CENTER], 5, 5]];
+
+	$ok_button = [new JButton: "Ok"];
+	[$buttoncontainer add: $ok_button];
+
+	$cancel_button = [new JButton: "Cancel"];
+	[$buttoncontainer add: $cancel_button];
+
+	[$maincontainer add: $buttoncontainer , [BorderLayout PAGE_END]];
+
+	[$frame add: $maincontainer];
+	[$frame setVisible: 1];
+
+	[$cancel_button addActionListener: lambda({
+		[$frame setVisible: 0];
+	})];
+}

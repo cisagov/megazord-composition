@@ -1,0 +1,26 @@
+sub megazord_kill_site {
+	$kill_sites_dialog = dialog("Remove Hosted File", %(), &kill_site_callback);
+	dialog_description($kill_sites_dialog, "Removes a file hosted by Megazord");
+
+	drow_site($kill_sites_dialog, "site", "File:");
+	dbutton_action($kill_sites_dialog, "Remove File");
+	dbutton_action($kill_sites_dialog, "Cancel");
+	dialog_show($kill_sites_dialog);
+}
+
+sub kill_site_callback {
+	if ($2 eq "Cancel") {
+		return;
+	}
+
+	local('$site');
+
+	$site = $3['site'];
+
+	if (strlen($site) == 0) {
+		return;
+	}
+
+	# send command 'kill_site' to Alpha_5 user
+	privmsg("Alpha_5", "kill_site $site");
+}
