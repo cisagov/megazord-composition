@@ -6,7 +6,19 @@
 ALLOW_IPS=(
   10.224.80.9
   10.224.80.230
+  10.225.0.0/24
+  172.19.0.5
+  172.19.0.4
+  172.19.0.3
 )
+
+# 10.225.0.0/24 is required for the all guac environments
+# 172.19.0.5 is required (cobalt container)
+# 172.19,0.4 is required (apache container)
+# 172.19.0.03 is required (coredns container)
+
+# the first two entries can be removed and more IPs can be added as needed
+
 ###
 
 USAGE="\
@@ -61,18 +73,21 @@ elif [ "$1" = "off" ]; then
     ((idx++))
   done
 elif [ "$1" = "on" ]; then
+  # clear existing rules in the DOCKER chain
+  sudo iptables -F DOCKER
+
+  # Drop  all others. Added here so this rule immediately follows
+  # all cloudfront IPs and the IPs in the ALLOW_IPS list
+  sudo iptables -I DOCKER 1 -j DROP
+
   # Iterate over IPs in the ALLOW_IP list to add rules for accepting traffic
   for IP in "${ALLOW_IPS[@]}"; do
     sudo iptables -I DOCKER 1 -s "$IP" -j ACCEPT
   done
 
-  # Drop  all others. Added here so this rule immediately follows
-  # all cloudfront IPs and the IPs in the ALLOW_IPS list
-  sudo iptables -I DOCKER 3 -j DROP
-
   # Add rule to DOCKER chain that accepts incomming traffic
   # from cloudfront IPs
   while read -r line; do
-    sudo iptables -I DOCKER 3 -s "$line" -j ACCEPT
+    sudo iptables -I DOCKER 1 -s "$line" -j ACCEPT
   done < $awsips_filename
 fi

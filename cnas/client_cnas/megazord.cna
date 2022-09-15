@@ -1,0 +1,43 @@
+global('$cloudfront');
+privmsg("Alpha_5", "cloudfront");
+
+include(script_resource("host_files.cna"));
+include(script_resource("host_directory.cna"));
+include(script_resource("kill_sites.cna"));
+
+on event_private {
+	# $1 - message author
+	# $2 - message recipient
+	# $3 - message contents
+	# $4 - timestamp
+
+	local('@message', '$command', '$response');
+
+	if ($1 eq "Alpha_5") {
+		@message = split("=", $3);
+		$command = @message[0];
+		$response = @message[-1];
+
+		if ($command eq "cloudfront"){
+			$cloudfront = $response;
+		}
+	}
+}
+
+alias megazord {
+	Megazord();
+}
+
+menubar("Megazord", "Megazord", 2);
+
+popup Megazord {
+	item "Host File(s)" {
+		megazord_host_file();
+	}
+	item "Host Folder" {
+		megazord_host_dir();
+	}
+	item "Remove Hosted File" {
+		megazord_kill_site();
+	}
+}

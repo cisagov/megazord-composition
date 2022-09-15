@@ -1,0 +1,57 @@
+
+on event_newsite {
+    local('$siteurl');
+    $siteurl = split(" ", $2)[-1];
+    cmdcurl($siteurl);
+    $payload_dir = get_env_var("PAYLOAD");
+}
+
+sub cmdcurl {
+    $url = $1;
+
+    #$filename = split("/", $url)[-1];
+
+    $filename = split(":80", $url)[-1];
+
+    if (-exists "/opt/cobaltstrike/uploads $+ $filename") {
+        elog("$filename reachable @ https:// $+ $cloudfront_domain $+ $payload_dir $+ $filename");
+        return;
+    }
+
+
+    elog("$filename reachable @ https:// $+ $cloudfront_domain $+ $payload_dir $+ $filename");
+
+    $output = "/opt/cobaltstrike/uploads $+ $filename";
+
+    # Get parent directory of this file
+    $directories = getFileParent($output);
+
+    # Create any directories
+    mkdir($directories);
+
+    $cmd = "curl -v 172.19.0.5:80$filename -o $output";
+
+    $process = exec("$cmd");
+    if (checkError($error)) {
+        warn($error);
+    }
+    else {
+        # sleep to give curl a chance to download file
+        sleep( 1 * 1000); #sleep 1 seconds
+
+        println("$filename hosted at:  $url");
+    }
+
+    closef($process);
+}
+
+
+sub get_env_var {
+    $process = exec("grep $1 /.env");
+    $data  = readb($process, -1);
+    closef($process);
+
+    $dir = split('=', $data)[-1];
+
+    return replace($dir, "\n", "");
+}

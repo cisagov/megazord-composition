@@ -1,0 +1,49 @@
+sub megazord_host_file {
+	prompt_file_open("Select File", $null, true, &host_files_callback);
+}
+
+sub host_files_callback {
+	# $1 - comma separated list of selected filepaths
+	local('@filepaths', '$file', '$tempname');
+
+	@filepaths = split(',', $1);
+
+
+	foreach $file (@filepaths) {
+		$tempname = split("/", $file)[-1];
+		prompt_text("Do you want to rename the file", $tempname,{
+			hostfile($file,$1);
+		});
+	}
+}
+
+sub hostfile {
+	# $1 - full path to the file, including name of the file
+	# $2 - the actual name of the file  (this may be different from
+	#	filename in $1 if modified by user)
+
+	local('$filepath', '$handler', '$beacon_data', '@fileContents', '$filename');
+	$filepath = $1;
+	$handler = openf($filepath);
+	$beacon_data = readb($handler, -1);
+	closef($handler);
+
+	@fileContents = split("/", $filepath);
+	$filename = @fileContents[-1];
+
+	if ($2 !eq ""){
+		$filename = $2;
+
+		# Make sure the file starts with a '/'
+		if (charAt($filename, 0) !eq '/') {
+			$filename = "/ $+ $filename";
+		}
+	}
+
+	site_host("172.19.0.5", 80, "$filename",
+		$beacon_data, "automatic", "$filename", false);
+
+	if (checkError($error)) {
+		warn($error);
+	}
+}
