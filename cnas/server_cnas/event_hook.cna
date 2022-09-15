@@ -1,0 +1,35 @@
+on event_newsite {
+    $siteurl = split(" ", $2)[-1];
+    cmdcurl($siteurl);
+    elog("$filename reachable @ $cloudfront_domain/$payload_dir/$filename");
+}
+
+sub cmdcurl {
+    $url = $1; 
+    
+    $filename = split("/", $url)[-1];
+
+    if (-exists "/opt/cobaltstrike/uploads/$filename") {
+        return;
+    }
+
+    $filename = split(":80", $url)[-1];
+
+    $output = "/opt/cobaltstrike/uploads $+ $filename";
+    $cmd = "curl -v 172.19.0.5:80$filename -o $output --create-dirs";
+    
+    $process = exec("$cmd");
+    if (checkError($error)) {
+        warn($error);
+    }
+    else {
+        # sleep to give curl a chance to download file
+        sleep( 1 * 1000); #sleep 1 seconds
+        
+        println("$filename hosted at:  $url");
+    }
+    
+    closef($process);
+}
+
+

@@ -1,0 +1,31 @@
+sub host_sites {
+    local("@dir_contents", "$file");
+
+    @dir_contents = ls("$1");
+
+    foreach $file (@dir_contents) {
+        if ((-isDir $file)){
+            host_sites($file);
+        }
+        else if ((!-isHidden $file)) {
+            hostfile($file);
+        }
+    }
+}
+
+sub hostfile {
+    local('$filepath', '$filename');
+
+    $filepath = $1;
+    $handler = openf($filepath);
+    $beacon_data = readb($handler, -1);
+    closef($handler);
+
+    #$filename = split('/', $filepath)[-1];
+
+    $filename = split("$uploads_dir", $filepath)[-1];
+
+    site_host("172.19.0.5", 80, "$filename", $beacon_data, 
+        "automatic", "$filename", false);
+}
+
