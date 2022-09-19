@@ -84,14 +84,14 @@ The environment variables are as follows:
 
 - C2_IP -> the ip address of the C2 container, 172.19.0.5 by default
 
-- PASSWORD -> the password to access the teamserver, "password" by default
+- PASSWORD -> the password to access the teamserver, "password123" by default
 
-- C2_PROFILE -> profile used with the teamserver, amazon.profile by default
+- C2_PROFILE -> profile used with the teamserver, domain.profile by default
 
 - KILLDATE -> the killdate for the teamserver, 2022-12-30 by default
 
 - KEYSTORE -> the name of the keystore holding the SSL certificate and key,
-wanurap.com.store by default
+domain.com.store by default
 
 <!--
 | Name  | Purpose | Default |
