@@ -47,4 +47,3 @@ sub set_globals {
     $c2_domain = get_env_var("C2_DOMAIN");
     $payload_dir = get_env_var("PAYLOAD");
 }
-
