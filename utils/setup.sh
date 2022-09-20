@@ -50,25 +50,25 @@ RESET="\033[0m"
 #### END variables ####
 
 #### Utility functions ####
-check_variable () {
-	# checks if a variable is set or not
-	# Parameters:
-	#   $1 - variable to check
-	#   $2 - flag from command-line arguments responsible for this variable
+check_variable() {
+  # checks if a variable is set or not
+  # Parameters:
+  #   $1 - variable to check
+  #   $2 - flag from command-line arguments responsible for this variable
 
-	if [[ -z "${1}" ]]; then
-  		echo -e "${RED_FG}[!]${RESET}${2} option is required" >&2
-  		exit 1
-	fi
+  if [[ -z "${1}" ]]; then
+    echo -e "${RED_FG}[!]${RESET}${2} option is required" >&2
+    exit 1
+  fi
 }
 
 find_and_replace() {
-	# searches a file for a target value and replaces it with
-	# the updated value
-	# Parameters:
-	#   $1 - target string
-	#   $2 - new value
-	#   $3 - path to file
+  # searches a file for a target value and replaces it with
+  # the updated value
+  # Parameters:
+  #   $1 - target string
+  #   $2 - new value
+  #   $3 - path to file
 
   # Get the original line
   original_val=$(grep "$1" "$3")
@@ -83,14 +83,12 @@ find_and_replace() {
   echo -e "${GREEN_FG}[\U2714] Added ${1} to ${3}${RESET}\n"
 }
 
-
 # check number of arguments
 if [[ $# -ne 8 ]]; then
   echo -e "${RED_FG}[!] Invalid number of arguments${RESET}"
   usage
   exit 1
 fi
-
 
 # Get command-line arguments
 while getopts "r:d:c:h:p:" arg; do
@@ -122,7 +120,6 @@ while getopts "r:d:c:h:p:" arg; do
   esac
 done
 
-
 check_variable "${cloudfront_domain}" "-c"
 
 check_variable "${domain}" "-d"
@@ -138,7 +135,6 @@ keystore="${domain}.store"
 keystore_path="/tools/Malleable-C2-Profiles/normal/${keystore}"
 c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
 ########################################
-
 
 # Add cloudfront_domain to env file
 find_and_replace "CLOUDFRONT_DOMAIN" "$cloudfront_domain" "${megazord_path}.env"
