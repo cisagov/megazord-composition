@@ -13,9 +13,10 @@ prior to launching megazord."
   echo "    - Generating a fresh Corefile and outputting it in the correct location"
   echo
   echo "Options:"
-  echo "    -r    The url Apache will redirect out-of-scope traffic to"
-  echo "    -d    The domain of the teamserver"
   echo "    -c    The cloudfront url"
+  echo "    -d    The domain of the teamserver"
+  echo "    -p    The password for the teamserver"
+  echo "    -r    The url Apache will redirect out-of-scope traffic to"
   echo
   echo "Usage:"
   echo "    ./setup.sh -r redirect-url.com -d c2domain.com -c cloudfront.domain.net"
@@ -25,9 +26,13 @@ prior to launching megazord."
 unset -v redirect_location
 unset -v domain
 unset -v cloudfront_domain
+unset -v c2_password
 
 # Ensure the following variable is the correct path
 #########################################################################
+
+# Path to megazord-composition directory
+megazord_path="/tools/megazord-composition/"
 
 # Path to amazon.profile or ocsp.profile containing keystore information
 original_profile="/tools/Malleable-C2-Profiles/normal/amazon.profile"
@@ -44,64 +49,27 @@ RESET="\033[0m"
 
 #### END variables ####
 
-# check number of arguments
-if [[ $# -ne 6 ]]; then
-  echo -e "${RED_FG}[!] Invalid number of arguments${RESET}"
-  usage
-  exit 1
-fi
+#### Utility functions ####
+check_variable () {
+	# checks if a variable is set or not
+	# Parameters:
+	#   $1 - variable to check
+	#   $2 - flag from command-line arguments responsible for this variable
 
-# Get command-line arguments
-while getopts "r:d:c:h:" arg; do
-  case ${arg} in
-    h)
-      usage
-      exit
-      ;;
-    r)
-      redirect_location=${OPTARG}
-      ;;
-    d)
-      domain=${OPTARG}
-      ;;
-    c)
-      cloudfront_domain=${OPTARG}
-      ;;
-    :)
-      echo -e "${RED_FG}[!]${RESET} $0: A value is required for -${OPTARG}" >&2
-      exit 1
-      ;;
-    ?)
-      echo -e "${RED_FG}[!]${RESET} $0: Invalid option: -${OPTARG}" >&2
-      exit 2
-      ;;
-  esac
-done
-
-if [ -z "${redirect_location}" ]; then
-  echo -e "${RED_FG}[!]${RESET}-r option is required" >&2
-  exit 1
-fi
-
-if [ -z "${domain}" ]; then
-  echo -e "${RED_FG}[!]${RESET}-d option is required" >&2
-  exit 1
-fi
-
-if [ -z "${cloudfront_domain}" ]; then
-  echo -e "${RED_FG}[!]${RESET}-c option is required" >&2
-  exit 1
-fi
-
-# DO NOT modify the following variables
-keystore_password=$(tail -4 $original_profile | grep 'password' | cut -d ' ' -f 5)
-keystore_password=${keystore_password:1:-2}
-keystore="${domain}.store"
-keystore_path="/tools/Malleable-C2-Profiles/normal/${keystore}"
-c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
-########################################
+	if [[ -z "${1}" ]]; then
+  		echo -e "${RED_FG}[!]${RESET}${2} option is required" >&2
+  		exit 1
+	fi
+}
 
 find_and_replace() {
+	# searches a file for a target value and replaces it with
+	# the updated value
+	# Parameters:
+	#   $1 - target string
+	#   $2 - new value
+	#   $3 - path to file
+
   # Get the original line
   original_val=$(grep "$1" "$3")
 
@@ -115,21 +83,81 @@ find_and_replace() {
   echo -e "${GREEN_FG}[\U2714] Added ${1} to ${3}${RESET}\n"
 }
 
+
+# check number of arguments
+if [[ $# -ne 8 ]]; then
+  echo -e "${RED_FG}[!] Invalid number of arguments${RESET}"
+  usage
+  exit 1
+fi
+
+
+# Get command-line arguments
+while getopts "r:d:c:h:p:" arg; do
+  case ${arg} in
+    h)
+      usage
+      exit
+      ;;
+    c)
+      cloudfront_domain=${OPTARG}
+      ;;
+    d)
+      domain=${OPTARG}
+      ;;
+    p)
+      c2_password=${OPTARG}
+      ;;
+    r)
+      redirect_location=${OPTARG}
+      ;;
+    :)
+      echo -e "${RED_FG}[!]${RESET} $0: A value is required for -${OPTARG}" >&2
+      exit 1
+      ;;
+    ?)
+      echo -e "${RED_FG}[!]${RESET} $0: Invalid option: -${OPTARG}" >&2
+      exit 2
+      ;;
+  esac
+done
+
+
+check_variable "${cloudfront_domain}" "-c"
+
+check_variable "${domain}" "-d"
+
+check_variable "${c2_password}" "-p"
+
+check_variable "${redirect_location}" "-r"
+
+#### Set required variables based on command-line arguments
+keystore_password=$(tail -4 $original_profile | grep 'password' | cut -d ' ' -f 5)
+keystore_password=${keystore_password:1:-2}
+keystore="${domain}.store"
+keystore_path="/tools/Malleable-C2-Profiles/normal/${keystore}"
+c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
+########################################
+
+
 # Add cloudfront_domain to env file
-find_and_replace "CLOUDFRONT_DOMAIN" "$cloudfront_domain" "/tools/megazord-composition/.env"
+find_and_replace "CLOUDFRONT_DOMAIN" "$cloudfront_domain" "${megazord_path}.env"
 
 # Add c2_domain to env file
-find_and_replace "C2_DOMAIN" "${domain}" "/tools/megazord-composition/.env"
+find_and_replace "C2_DOMAIN" "${domain}" "${megazord_path}.env"
 
 # Update keystore name in .env
-find_and_replace "KEYSTORE" "${keystore}" "/tools/megazord-composition/.env"
+find_and_replace "KEYSTORE" "${keystore}" "${megazord_path}.env"
+
+# Update c2_password in .env
+find_and_replace "C2_PASSWORD" "${c2_password}" "${megazord_path}.env"
 
 # Extract certificate for domain from keystore
 echo -e "[*] Extracting ssl certificate"
 
 if ! res=$(keytool -export -alias "$domain" -keystore "$keystore_path" \
   -storepass "$keystore_password" -rfc \
-  -file "/tools/megazord-composition/src/secrets/cobalt.cert" 2>&1); then
+  -file "${megazord_path}src/secrets/cobalt.cert" 2>&1); then
   echo -e "${RED_FG} [ \U2757] $res${RESET}"
   exit 1
 fi
@@ -141,23 +169,23 @@ echo "[*] Extracting key"
 
 if ! openssl pkcs12 -in "$keystore_path" -passin pass:"$keystore_password" \
   -nodes -nocerts \
-  -out "/tools/megazord-composition/src/secrets/cobalt.key"; then
+  -out "${megazord_path}src/secrets/cobalt.key"; then
   echo -e "${RED_FG} [ \U2757] Error extracting key from keystore${RESET}"
   exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] Key extracted to\
- /tools/megazord-composition/src/secrets/cobalt.key${RESET}\n"
+ ${megazord_path}src/secrets/cobalt.key${RESET}\n"
 
 # Extract certificate bundle from keystore
 echo "[*] Extracting certificate bundle"
 
 keytool -list -rfc -keystore "$keystore_path" \
   -storepass "$keystore_password" \
-  > /tools/megazord-composition/src/secrets/ca_bundle.crt
+  > "${megazord_path}src/secrets/ca_bundle.crt"
 
 echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
- /tools/megazord-composition/src/secrets/ca-bundle.crt${RESET}\n"
+ ${megazord_path}src/secrets/ca-bundle.crt${RESET}\n"
 
 # Copy keystore into cobaltstrike directory
 echo -e "[*] Copying the keystore into /opt/cobaltstrike"
@@ -184,7 +212,7 @@ echo -e "${GREEN_FG}[\U2714] C2 Profile generated at\
  /opt/cobaltstrike/${c2_profile}${RESET}\n"
 
 # Update C2_PROFILE variable in .env file
-find_and_replace "C2_PROFILE" "${c2_profile}" "/tools/megazord-composition/.env"
+find_and_replace "C2_PROFILE" "${c2_profile}" "${megazord_path}.env"
 
 # Generate new .htaccess based on fresh C2 Profile
 echo "[*] Generating .htaccess based on c2_profile"
@@ -192,19 +220,19 @@ echo "[*] Generating .htaccess based on c2_profile"
 if ! python3 /tools/cs2modrewrite/cs2modrewrite.py \
   -i "/opt/cobaltstrike/$c2_profile" -c "https://172.19.0.5" \
   -r "https://$redirect_location" \
-  -o /tools/megazord-composition/src/apache2/.htaccess; then
+  -o "${megazord_path}src/apache2/.htaccess"; then
   echo -e "${RED_FG}[ \U2757] Error generating .htaccess${RESET}"
   exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] .htaccess generated at\
- /tools/megazord-composition/src/apache2/.htaccess${RESET}\n"
+ ${megazord_path}src/apache2/.htaccess${RESET}\n"
 
 # Create new Corefile for Coredns configuration
 echo -e "[*] Creating Corefile using $domain in\
- /tools/megazord-composition/src/coredns/config"
+ ${megazord_path}src/coredns/config"
 
-cat > /tools/megazord-composition/src/coredns/config/Corefile << CORE_BLOCK
+cat > "${megazord_path}src/coredns/config/Corefile" << CORE_BLOCK
 
 .:53 {
 	forward . 8.8.8.8
@@ -215,7 +243,7 @@ cat > /tools/megazord-composition/src/coredns/config/Corefile << CORE_BLOCK
 CORE_BLOCK
 
 echo -e "${GREEN_FG}[\U2714] Corefile created at\
-/tools/megazord-composition/src/coredns/config/Corefile${RESET}\n"
+${megazord_path}src/coredns/config/Corefile${RESET}\n"
 
 # Generate pseudo-random string to use as directory for payload hosting
 echo "[*] Renaming uploads directory with pseudo-random string"
@@ -223,11 +251,9 @@ echo "[*] Renaming uploads directory with pseudo-random string"
 endpoint="/$(openssl rand -hex 6)/$(openssl rand -hex 3)"
 new_line="Alias ${endpoint} \"/var/www/uploads\""
 
-uploads=$(grep 'Alias' \
-  < /tools/megazord-composition/src/apache2/apache2.conf)
+uploads=$(grep 'Alias' "${megazord_path}src/apache2/apache2.conf")
 
-sed -i "s|${uploads}|${new_line}|" \
-  /tools/megazord-composition/src/apache2/apache2.conf
+sed -i "s|${uploads}|${new_line}|" "${megazord_path}src/apache2/apache2.conf"
 
 echo -e "${GREEN_FG}[\U2714] Payload endpoint updated to:\
  ${MAGENTA_FG}${endpoint}${RESET}\n"
@@ -237,4 +263,4 @@ echo -e "${MAGENTA_FG}https://${cloudfront_domain}${endpoint}/NAME_OF_PAYLOAD${R
 echo -e "\nPayload also accessible at ${MAGENTA_FG}https://${domain}${endpoint}/NAME_OF_PAYLOAD${RESET}\n"
 
 # Update PAYLOAD_DIR variable in .env with updated payload directory
-find_and_replace "PAYLOAD_DIR" "${endpoint}" "/tools/megazord-composition/.env"
+find_and_replace "PAYLOAD_DIR" "${endpoint}" "${megazord_path}.env"
