@@ -3,7 +3,7 @@ version: "3.7"
 
 services:
   coredns:
-    image: xvxd4sh/coredns:latest
+    image: cisagov/coredns:latest
     container_name: coredns
     hostname: coredns_megazord
     init: true
@@ -20,7 +20,7 @@ services:
         ipv4_address: 172.19.0.3
 
   apache:
-    image: xvxd4sh/apache2:latest
+    image: cisagov/apache2:latest
     container_name: apache
     init: true
     restart: on-failure:5
@@ -46,7 +46,7 @@ services:
         ipv4_address: 172.19.0.4
 
   cobalt:
-    image: xvxd4sh/java-debian11
+    image: cisagov/java-debian11
     container_name: cobalt
     depends_on:
       - apache
