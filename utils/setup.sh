@@ -28,11 +28,20 @@ unset -v domain
 unset -v cloudfront_domain
 unset -v c2_password
 
-# Ensure the following variable is the correct path
+# Ensure the following variable are the correct paths
 #########################################################################
 
 # Path to megazord-composition directory
 megazord_path="/tools/megazord-composition/"
+
+# Path to SourcePoint
+sourcepoint_path="/tools/SourcePoint/"
+
+# Path to cs2modrewrite
+cs2mod_path="/tools/cs2modrewrite/"
+
+# Path to cobalt strike
+cs_path="/opt/cobaltstrike/"
 
 # Path to amazon.profile or ocsp.profile containing keystore information
 original_profile="/tools/Malleable-C2-Profiles/normal/amazon.profile"
@@ -184,9 +193,9 @@ echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
  ${megazord_path}src/secrets/ca-bundle.crt${RESET}\n"
 
 # Copy keystore into cobaltstrike directory
-echo -e "[*] Copying the keystore into /opt/cobaltstrike"
-cp "$keystore_path" "/opt/cobaltstrike/$keystore"
-echo -e "${GREEN_FG}[\U2714] Keystore copied into /opt/cobaltstrike${RESET}\n"
+echo -e "[*] Copying the keystore into ${cs_path}"
+cp "$keystore_path" "${cs_path}${keystore}"
+echo -e "${GREEN_FG}[\U2714] Keystore copied into ${cs_path}${RESET}\n"
 
 # Generate new C2 profile via SourcePoint
 echo "[*] Generating new c2 profile with SourcePoint"
@@ -195,8 +204,8 @@ echo "[*] Generating new c2 profile with SourcePoint"
 # SourcePoint profile option randomly from the set (5, 7)
 profile_string=$(($(shuf -i 1-10 -n 1) <= 5 ? 5 : 7))
 
-if ! /tools/SourcePoint/SourcePoint -Host "$cloudfront_domain" \
-  -Outfile "/opt/cobaltstrike/$c2_profile" \
+if ! "${sourcepoint_path}"SourcePoint -Host "$cloudfront_domain" \
+  -Outfile "${cs_path}${c2_profile}" \
   -Injector NtMapViewOfSection -Stage True \
   -Password "$keystore_password" -Keystore "$keystore" \
   -Profile $profile_string > /dev/null; then
@@ -205,7 +214,7 @@ if ! /tools/SourcePoint/SourcePoint -Host "$cloudfront_domain" \
 fi
 
 echo -e "${GREEN_FG}[\U2714] C2 Profile generated at\
- /opt/cobaltstrike/${c2_profile}${RESET}\n"
+ ${cs_path}${c2_profile}${RESET}\n"
 
 # Update C2_PROFILE variable in .env file
 find_and_replace "C2_PROFILE" "${c2_profile}" "${megazord_path}.env"
@@ -213,8 +222,8 @@ find_and_replace "C2_PROFILE" "${c2_profile}" "${megazord_path}.env"
 # Generate new .htaccess based on fresh C2 Profile
 echo "[*] Generating .htaccess based on c2_profile"
 
-if ! python3 /tools/cs2modrewrite/cs2modrewrite.py \
-  -i "/opt/cobaltstrike/$c2_profile" -c "https://172.19.0.5" \
+if ! python3 "${cs2mod_path}"cs2modrewrite.py \
+  -i "${cs_path}$c2_profile" -c "https://172.19.0.5" \
   -r "https://$redirect_location" \
   -o "${megazord_path}src/apache2/.htaccess"; then
   echo -e "${RED_FG}[ \U2757] Error generating .htaccess${RESET}"
