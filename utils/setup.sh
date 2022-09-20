@@ -44,6 +44,13 @@ RESET="\033[0m"
 
 #### END variables ####
 
+# check number of arguments
+if [[ $# -ne 6 ]]; then
+  echo -e "${RED_FG}[!] Invalid number of arguments${RESET}"
+  usage
+  exit 1
+fi
+
 # Get command-line arguments
 while getopts "r:d:c:h:" arg; do
   case ${arg} in
