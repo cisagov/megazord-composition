@@ -3,35 +3,35 @@
 function usage {
   echo -e "Megazord setup script\n"
   echo "This script will perform setup tasks to initialize the environment\
-prior to launching megazord."
+prior to launching Megazord."
   echo -e "\nThese tasks include:"
-  echo "    - Setting values in the .env file used by docker compose"
+  echo "    - Setting values in the .env file used by Docker Compose"
   echo "    - Generating a pseudorandom string for the uploads directory"
   echo "    - Extracting certificates and private key from the keystore"
   echo "    - Generating a fresh C2 Profile and outputting it in the correct location"
-  echo "    - Generating an htaccess config file for Apache and outputing it in the correct location"
+  echo "    - Generating a .htaccess config file for Apache and outputing it in the correct location"
   echo "    - Generating a fresh Corefile and outputting it in the correct location"
   echo
   echo "Options:"
-  echo "    -c    The cloudfront url"
+  echo "    -c    The CloudFront URL"
   echo "    -d    The domain of the teamserver"
   echo "    -p    The password for the teamserver"
-  echo "    -r    The url Apache will redirect out-of-scope traffic to"
+  echo "    -r    The URL Apache will redirect out-of-scope traffic to"
   echo
   echo "Usage:"
-  echo "    ./setup.sh -r redirect-url.com -d c2domain.com -c cloudfront.domain.net"
+  echo "    ${0##*/} -r redirect-url.com -d c2domain.com -c cloudfront.domain.net"
 }
 
-# unset variables in case this script is being ran a 2nd time
+# Unset variables in case this script is being run a second time
 unset -v redirect_location
 unset -v domain
 unset -v cloudfront_domain
 unset -v c2_password
 
-# Ensure the following variable are the correct paths
+# Ensure the following variables are the correct paths
 #########################################################################
 
-# Path to megazord-composition directory
+# Path to the megazord-composition directory
 megazord_path="/tools/megazord-composition/"
 
 # Path to SourcePoint
@@ -40,7 +40,7 @@ sourcepoint_path="/tools/SourcePoint/"
 # Path to cs2modrewrite
 cs2mod_path="/tools/cs2modrewrite/"
 
-# Path to cobalt strike
+# Path to Cobalt Strike
 cs_path="/opt/cobaltstrike/"
 
 # Path to amazon.profile or ocsp.profile containing keystore information
@@ -60,7 +60,7 @@ RESET="\033[0m"
 
 #### Utility functions ####
 check_variable() {
-  # checks if a variable is set or not
+  # Check if a variable is set or not
   # Parameters:
   #   $1 - variable to check
   #   $2 - flag from command-line arguments responsible for this variable
@@ -72,7 +72,7 @@ check_variable() {
 }
 
 find_and_replace() {
-  # searches a file for a target value and replaces it with
+  # Search a file for a target value and replaces it with
   # the updated value
   # Parameters:
   #   $1 - target string
@@ -92,7 +92,7 @@ find_and_replace() {
   echo -e "${GREEN_FG}[\U2714] Added ${1} to ${3}${RESET}\n"
 }
 
-# check number of arguments
+# Check the number of arguments
 if [[ $# -ne 8 ]]; then
   echo -e "${RED_FG}[!] Invalid number of arguments${RESET}"
   usage
@@ -100,7 +100,7 @@ if [[ $# -ne 8 ]]; then
 fi
 
 # Get command-line arguments
-while getopts "r:d:c:h:p:" arg; do
+while getopts "r:d:c:hp:" arg; do
   case ${arg} in
     h)
       usage
@@ -145,16 +145,16 @@ keystore_path="/tools/Malleable-C2-Profiles/normal/${keystore}"
 c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
 ########################################
 
-# Add cloudfront_domain to env file
+# Update the CLOUDFRONT_DOMAIN in the .env file
 find_and_replace "CLOUDFRONT_DOMAIN" "$cloudfront_domain" "${megazord_path}.env"
 
-# Add c2_domain to env file
+# Update the C2_DOMAIN in the .env file
 find_and_replace "C2_DOMAIN" "${domain}" "${megazord_path}.env"
 
-# Update keystore name in .env
+# Update the KEYSTORE in the .env file
 find_and_replace "KEYSTORE" "${keystore}" "${megazord_path}.env"
 
-# Update c2_password in .env
+# Update the C2_PASSWORD in the .env file
 find_and_replace "C2_PASSWORD" "${c2_password}" "${megazord_path}.env"
 
 # Extract certificate for domain from keystore
@@ -192,7 +192,7 @@ keytool -list -rfc -keystore "$keystore_path" \
 echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
  ${megazord_path}src/secrets/ca-bundle.crt${RESET}\n"
 
-# Copy keystore into cobaltstrike directory
+# Copy keystore into the Cobalt Strike directory
 echo -e "[*] Copying the keystore into ${cs_path}"
 cp "$keystore_path" "${cs_path}${keystore}"
 echo -e "${GREEN_FG}[\U2714] Keystore copied into ${cs_path}${RESET}\n"
@@ -216,7 +216,7 @@ fi
 echo -e "${GREEN_FG}[\U2714] C2 Profile generated at\
  ${cs_path}${c2_profile}${RESET}\n"
 
-# Update C2_PROFILE variable in .env file
+# Update the C2_PROFILE in the .env file
 find_and_replace "C2_PROFILE" "${c2_profile}" "${megazord_path}.env"
 
 # Generate new .htaccess based on fresh C2 Profile
@@ -250,8 +250,8 @@ CORE_BLOCK
 echo -e "${GREEN_FG}[\U2714] Corefile created at\
 ${megazord_path}src/coredns/config/Corefile${RESET}\n"
 
-# Generate pseudo-random string to use as directory for payload hosting
-echo "[*] Renaming uploads directory with pseudo-random string"
+# Generate pseudorandom string to use as directory for payload hosting
+echo "[*] Renaming uploads directory with pseudorandom string"
 
 endpoint="/$(openssl rand -hex 6)/$(openssl rand -hex 3)"
 new_line="Alias ${endpoint} \"/var/www/uploads\""
@@ -267,5 +267,5 @@ echo -e "Payloads hosted at:"
 echo -e "${MAGENTA_FG}https://${cloudfront_domain}${endpoint}/NAME_OF_PAYLOAD${RESET}"
 echo -e "\nPayload also accessible at ${MAGENTA_FG}https://${domain}${endpoint}/NAME_OF_PAYLOAD${RESET}\n"
 
-# Update PAYLOAD_DIR variable in .env with updated payload directory
+# Update the PAYLOAD_DIR in the .env file with the updated payload directory
 find_and_replace "PAYLOAD_DIR" "${endpoint}" "${megazord_path}.env"

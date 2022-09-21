@@ -4,7 +4,7 @@
 [![CodeQL](https://github.com/cisagov/megazord-composition/workflows/CodeQL/badge.svg)](https://github.com/cisagov/megazord-composition/actions/workflows/codeql-analysis.yml)
 [![Known Vulnerabilities](https://snyk.io/test/github/cisagov/megazord-composition/badge.svg)](https://snyk.io/test/github/cisagov/megazord-composition)
 
-This is a docker composition of the megazord containers.
+This is a Docker composition of the Megazord containers.
 
 ## Running ##
 

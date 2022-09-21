@@ -46,7 +46,7 @@ services:
         ipv4_address: 172.19.0.4
 
   cobalt:
-    image: cisagov/java-debian11
+    image: cisagov/java-debian11:latest
     container_name: cobalt
     depends_on:
       - apache
