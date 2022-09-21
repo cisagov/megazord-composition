@@ -19,7 +19,7 @@ prior to launching Megazord."
   echo "    -r    The URL Apache will redirect out-of-scope traffic to"
   echo
   echo "Usage:"
-  echo "    ${0##*/} -r redirect-url.com -d c2domain.com -c cloudfront.domain.net"
+  echo "    ${0##*/} -r redirect-url.com -d c2domain.com -c cloudfront.domain.net -p c2_password"
 }
 
 # Unset variables in case this script is being run a second time
@@ -66,7 +66,7 @@ check_variable() {
   #   $2 - flag from command-line arguments responsible for this variable
 
   if [[ -z "${1}" ]]; then
-    echo -e "${RED_FG}[!]${RESET}${2} option is required" >&2
+    echo -e "${RED_FG}[!]${RESET} ${2} option is required" >&2
     usage
     exit 1
   fi
@@ -124,6 +124,12 @@ while getopts "r:d:c:hp:" arg; do
       ;;
   esac
 done
+
+if [[ "$#" -eq 0 ]]; then
+      	echo -e "${RED_FG}[!]${RESET} Invalid number of arguments" >&2
+	usage
+	exit 1
+fi
 
 check_variable "${cloudfront_domain}" "-c"
 
