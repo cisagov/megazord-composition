@@ -126,9 +126,9 @@ while getopts "r:d:c:hp:" arg; do
 done
 
 if [[ "$#" -eq 0 ]]; then
-      	echo -e "${RED_FG}[!]${RESET} Invalid number of arguments" >&2
-	usage
-	exit 1
+  echo -e "${RED_FG}[!]${RESET} Invalid number of arguments" >&2
+  usage
+  exit 1
 fi
 
 check_variable "${cloudfront_domain}" "-c"
