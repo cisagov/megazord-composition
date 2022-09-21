@@ -67,6 +67,7 @@ check_variable() {
 
   if [[ -z "${1}" ]]; then
     echo -e "${RED_FG}[!]${RESET}${2} option is required" >&2
+    usage
     exit 1
   fi
 }
@@ -85,19 +86,12 @@ find_and_replace() {
   echo "[*] Updating ${1} variable in ${3}"
 
   if ! sed -i "s|${original_val}|${1}=${2}|" "${3}"; then
-    echo -e "${RED_FG}[ \U2757] Error updating ${1} in ${3}${RESET}"
+    echo -e "${RED_FG}[!] Error updating ${1} in ${3}${RESET}"
     exit 1
   fi
 
   echo -e "${GREEN_FG}[\U2714] Added ${1} to ${3}${RESET}\n"
 }
-
-# Check the number of arguments
-if [[ $# -ne 8 ]]; then
-  echo -e "${RED_FG}[!] Invalid number of arguments${RESET}"
-  usage
-  exit 1
-fi
 
 # Get command-line arguments
 while getopts "r:d:c:hp:" arg; do
@@ -120,10 +114,12 @@ while getopts "r:d:c:hp:" arg; do
       ;;
     :)
       echo -e "${RED_FG}[!]${RESET} $0: A value is required for -${OPTARG}" >&2
+      usage
       exit 1
       ;;
     ?)
       echo -e "${RED_FG}[!]${RESET} $0: Invalid option: -${OPTARG}" >&2
+      usage
       exit 2
       ;;
   esac
@@ -146,23 +142,23 @@ c2_profile="${domain}-$(date '+%Y-%m-%d').profile"
 ########################################
 
 # Update the CLOUDFRONT_DOMAIN in the .env file
-find_and_replace "CLOUDFRONT_DOMAIN" "$cloudfront_domain" "${megazord_path}.env"
+find_and_replace "CLOUDFRONT_DOMAIN" "$cloudfront_domain" "${megazord_path}/.env"
 
 # Update the C2_DOMAIN in the .env file
-find_and_replace "C2_DOMAIN" "${domain}" "${megazord_path}.env"
+find_and_replace "C2_DOMAIN" "${domain}" "${megazord_path}/.env"
 
 # Update the KEYSTORE in the .env file
-find_and_replace "KEYSTORE" "${keystore}" "${megazord_path}.env"
+find_and_replace "KEYSTORE" "${keystore}" "${megazord_path}/.env"
 
 # Update the C2_PASSWORD in the .env file
-find_and_replace "C2_PASSWORD" "${c2_password}" "${megazord_path}.env"
+find_and_replace "C2_PASSWORD" "${c2_password}" "${megazord_path}/.env"
 
 # Extract certificate for domain from keystore
 echo -e "[*] Extracting ssl certificate"
 
 if ! res=$(keytool -export -alias "$domain" -keystore "$keystore_path" \
   -storepass "$keystore_password" -rfc \
-  -file "${megazord_path}src/secrets/cobalt.cert" 2>&1); then
+  -file "${megazord_path}/src/secrets/cobalt.cert" 2>&1); then
   echo -e "${RED_FG} [ \U2757] $res${RESET}"
   exit 1
 fi
@@ -174,27 +170,27 @@ echo "[*] Extracting key"
 
 if ! openssl pkcs12 -in "$keystore_path" -passin pass:"$keystore_password" \
   -nodes -nocerts \
-  -out "${megazord_path}src/secrets/cobalt.key"; then
+  -out "${megazord_path}/src/secrets/cobalt.key"; then
   echo -e "${RED_FG} [ \U2757] Error extracting key from keystore${RESET}"
   exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] Key extracted to\
- ${megazord_path}src/secrets/cobalt.key${RESET}\n"
+ ${megazord_path}/src/secrets/cobalt.key${RESET}\n"
 
 # Extract certificate bundle from keystore
 echo "[*] Extracting certificate bundle"
 
 keytool -list -rfc -keystore "$keystore_path" \
   -storepass "$keystore_password" \
-  > "${megazord_path}src/secrets/ca_bundle.crt"
+  > "${megazord_path}/src/secrets/ca_bundle.crt"
 
 echo -e "${GREEN_FG}[\U2714] Bundle extracted to\
- ${megazord_path}src/secrets/ca-bundle.crt${RESET}\n"
+ ${megazord_path}/src/secrets/ca-bundle.crt${RESET}\n"
 
 # Copy keystore into the Cobalt Strike directory
 echo -e "[*] Copying the keystore into ${cs_path}"
-cp "$keystore_path" "${cs_path}${keystore}"
+cp "$keystore_path" "${cs_path}/${keystore}"
 echo -e "${GREEN_FG}[\U2714] Keystore copied into ${cs_path}${RESET}\n"
 
 # Generate new C2 profile via SourcePoint
@@ -204,8 +200,8 @@ echo "[*] Generating new c2 profile with SourcePoint"
 # SourcePoint profile option randomly from the set (5, 7)
 profile_string=$(($(shuf -i 1-10 -n 1) <= 5 ? 5 : 7))
 
-if ! "${sourcepoint_path}"SourcePoint -Host "$cloudfront_domain" \
-  -Outfile "${cs_path}${c2_profile}" \
+if ! "${sourcepoint_path}"/SourcePoint -Host "$cloudfront_domain" \
+  -Outfile "${cs_path}/${c2_profile}" \
   -Injector NtMapViewOfSection -Stage True \
   -Password "$keystore_password" -Keystore "$keystore" \
   -Profile $profile_string > /dev/null; then
@@ -214,10 +210,10 @@ if ! "${sourcepoint_path}"SourcePoint -Host "$cloudfront_domain" \
 fi
 
 echo -e "${GREEN_FG}[\U2714] C2 Profile generated at\
- ${cs_path}${c2_profile}${RESET}\n"
+ ${cs_path}/${c2_profile}${RESET}\n"
 
 # Update the C2_PROFILE in the .env file
-find_and_replace "C2_PROFILE" "${c2_profile}" "${megazord_path}.env"
+find_and_replace "C2_PROFILE" "${c2_profile}" "${megazord_path}/.env"
 
 # Generate new .htaccess based on fresh C2 Profile
 echo "[*] Generating .htaccess based on c2_profile"
@@ -225,19 +221,19 @@ echo "[*] Generating .htaccess based on c2_profile"
 if ! python3 "${cs2mod_path}"cs2modrewrite.py \
   -i "${cs_path}$c2_profile" -c "https://172.19.0.5" \
   -r "https://$redirect_location" \
-  -o "${megazord_path}src/apache2/.htaccess"; then
+  -o "${megazord_path}/src/apache2/.htaccess"; then
   echo -e "${RED_FG}[ \U2757] Error generating .htaccess${RESET}"
   exit 1
 fi
 
 echo -e "${GREEN_FG}[\U2714] .htaccess generated at\
- ${megazord_path}src/apache2/.htaccess${RESET}\n"
+ ${megazord_path}/src/apache2/.htaccess${RESET}\n"
 
 # Create new Corefile for Coredns configuration
 echo -e "[*] Creating Corefile using $domain in\
- ${megazord_path}src/coredns/config"
+ ${megazord_path}/src/coredns/config"
 
-cat > "${megazord_path}src/coredns/config/Corefile" << CORE_BLOCK
+cat > "${megazord_path}/src/coredns/config/Corefile" << CORE_BLOCK
 
 .:53 {
 	forward . 8.8.8.8
@@ -248,7 +244,7 @@ cat > "${megazord_path}src/coredns/config/Corefile" << CORE_BLOCK
 CORE_BLOCK
 
 echo -e "${GREEN_FG}[\U2714] Corefile created at\
-${megazord_path}src/coredns/config/Corefile${RESET}\n"
+${megazord_path}/src/coredns/config/Corefile${RESET}\n"
 
 # Generate pseudorandom string to use as directory for payload hosting
 echo "[*] Renaming uploads directory with pseudorandom string"
@@ -256,9 +252,9 @@ echo "[*] Renaming uploads directory with pseudorandom string"
 endpoint="/$(openssl rand -hex 6)/$(openssl rand -hex 3)"
 new_line="Alias ${endpoint} \"/var/www/uploads\""
 
-uploads=$(grep 'Alias' "${megazord_path}src/apache2/apache2.conf")
+uploads=$(grep 'Alias' "${megazord_path}/src/apache2/apache2.conf")
 
-sed -i "s|${uploads}|${new_line}|" "${megazord_path}src/apache2/apache2.conf"
+sed -i "s|${uploads}|${new_line}|" "${megazord_path}/src/apache2/apache2.conf"
 
 echo -e "${GREEN_FG}[\U2714] Payload endpoint updated to:\
  ${MAGENTA_FG}${endpoint}${RESET}\n"
@@ -268,4 +264,4 @@ echo -e "${MAGENTA_FG}https://${cloudfront_domain}${endpoint}/NAME_OF_PAYLOAD${R
 echo -e "\nPayload also accessible at ${MAGENTA_FG}https://${domain}${endpoint}/NAME_OF_PAYLOAD${RESET}\n"
 
 # Update the PAYLOAD_DIR in the .env file with the updated payload directory
-find_and_replace "PAYLOAD_DIR" "${endpoint}" "${megazord_path}.env"
+find_and_replace "PAYLOAD_DIR" "${endpoint}" "${megazord_path}/.env"
