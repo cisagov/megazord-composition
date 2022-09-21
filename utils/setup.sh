@@ -93,6 +93,13 @@ find_and_replace() {
   echo -e "${GREEN_FG}[\U2714] Added ${1} to ${3}${RESET}\n"
 }
 
+# Check if there are no command-line arguments
+if [[ "$#" -eq 0 ]]; then
+  echo -e "${RED_FG}[!]${RESET} Invalid number of arguments" >&2
+  usage
+  exit 1
+fi
+
 # Get command-line arguments
 while getopts "r:d:c:hp:" arg; do
   case ${arg} in
@@ -124,12 +131,6 @@ while getopts "r:d:c:hp:" arg; do
       ;;
   esac
 done
-
-if [[ "$#" -eq 0 ]]; then
-  echo -e "${RED_FG}[!]${RESET} Invalid number of arguments" >&2
-  usage
-  exit 1
-fi
 
 check_variable "${cloudfront_domain}" "-c"
 
