@@ -226,7 +226,7 @@ find_and_replace "C2_PROFILE" "${c2_profile}" "${megazord_path}/.env"
 echo "[*] Generating .htaccess based on c2_profile"
 
 if ! python3 "${cs2mod_path}"/cs2modrewrite.py \
-  -i "${cs_path}/$(c2_profile)" -c "https://172.19.0.5" \
+  -i "${cs_path}/${c2_profile}" -c "https://172.19.0.5" \
   -r "https://$redirect_location" \
   -o "${megazord_path}/src/apache2/.htaccess"; then
   echo -e "${RED_FG}[ \U2757] Error generating .htaccess${RESET}"
