@@ -30,7 +30,7 @@ echo -e "${GREEN_FG}[\U2714] Updated name of payload directory to:${RESET}\
 if sudo docker ps | grep 'apache' > /dev/null; then
   echo "[*] Restarting apache container"
 
-  sudo docker restart apache
+  sudo docker restart apache cobalt
 
   echo -e "${GREEN_FG}[\U2714] Apache container successfully restarted"
 fi
