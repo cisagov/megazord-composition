@@ -1,10 +1,10 @@
 # megazord-composition :dragon_face:🐳 #
 
-[![GitHub Build Status](https://github.com/xvxd4sh/megazord-composition/workflows/build/badge.svg)](https://github.com/xvxd4sh/megazord-composition/actions/workflows/build.yml)
-[![CodeQL](https://github.com/xvxd4sh/megazord-composition/workflows/CodeQL/badge.svg)](https://github.com/xvxd4sh/megazord-composition/actions/workflows/codeql-analysis.yml)
-[![Known Vulnerabilities](https://snyk.io/test/github/xvxd4sh/megazord-composition/badge.svg)](https://snyk.io/test/github/xvxd4sh/megazord-composition)
+[![GitHub Build Status](https://github.com/cisagov/megazord-composition/workflows/build/badge.svg)](https://github.com/cisagov/megazord-composition/actions/workflows/build.yml)
+[![CodeQL](https://github.com/cisagov/megazord-composition/workflows/CodeQL/badge.svg)](https://github.com/cisagov/megazord-composition/actions/workflows/codeql-analysis.yml)
+[![Known Vulnerabilities](https://snyk.io/test/github/cisagov/megazord-composition/badge.svg)](https://snyk.io/test/github/cisagov/megazord-composition)
 
-This is a docker composition of the megazord containers.
+This is a Docker composition of the Megazord containers.
 
 ## Running ##
 

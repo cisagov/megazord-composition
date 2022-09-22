@@ -5,15 +5,15 @@ include(script_resource("listener_setup.cna"));
 include(script_resource("kill_sites.cna"));
 include(script_resource("host_sites.cna"));
 
-$cloudfront_domain = "domain.cloudfront.net";
-$c2_domain = "domain.com";
-$payload_dir = "/something/else";
+$cloudfront_domain = "";
+$c2_domain = "";
+$payload_dir = "";
 $uploads_dir = '/opt/cobaltstrike/uploads';
 
 on ready {
+    set_globals();
     listener_setup();
     host_sites($uploads_dir);
-    $payload_dir = get_env_var("PAYLOAD");
 }
 
 on event_private {
@@ -40,4 +40,10 @@ on event_private {
         }
 
     }
+}
+
+sub set_globals {
+    $cloudfront_domain = get_env_var("CLOUDFRONT_DOMAIN");
+    $c2_domain = get_env_var("C2_DOMAIN");
+    $payload_dir = get_env_var("PAYLOAD");
 }
