@@ -29,7 +29,8 @@ sed -i "s|${current_dir}|${updated_line}|" \
 echo -e "${GREEN_FG}[\U2714] Updated name of payload directory to:${RESET}\
  ${MAGENTA_FG}$updated_dir${RESET}\n"
 
-# If apache is already running, restart the container
+# If the Apache container is already running, restart the Apache and Cobalt
+# Strike containers
 if sudo docker compose ps | grep 'apache' > /dev/null; then
   echo "[*] Restarting the Apache and Cobalt Strike containers"
 
