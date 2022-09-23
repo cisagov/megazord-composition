@@ -8,7 +8,7 @@ MAGENTA_FG="\033[1;35m"
 #CYAN_FG="\033[1;36m"
 RESET="\033[0m"
 
-# Path to megazord-composition
+# Path to the megazord-composition directory
 megazord_path="/tools/megazord-composition/"
 
 # Get line from apache2.conf with current name of payload directory
