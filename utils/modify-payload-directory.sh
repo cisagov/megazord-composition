@@ -31,7 +31,7 @@ echo -e "${GREEN_FG}[\U2714] Updated name of payload directory to:${RESET}\
 
 # If apache is already running, restart the container
 if sudo docker compose ps | grep 'apache' > /dev/null; then
-  echo "[*] Restarting apache container"
+  echo "[*] Restarting the Apache and Cobalt Strike containers"
 
   sudo docker compose restart apache cobalt
 
