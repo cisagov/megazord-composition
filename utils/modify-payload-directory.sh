@@ -14,7 +14,7 @@ megazord_path="/tools/megazord-composition/"
 # Get the current payload directory from the Apache configuration
 current_dir=$(grep 'Alias' < "${megazord_path}"/src/apache2/apache2.conf)
 
-# Get value of PAYLOAD_DIR from .env file
+# Get the value of PAYLOAD_DIR from the .env file
 updated_dir="$(grep 'PAYLOAD_DIR' < "${megazord_path}"/.env \
   | cut -d '=' -f 2)"
 
