@@ -35,5 +35,5 @@ if sudo docker ps | grep 'apache' > /dev/null; then
 
   sudo docker restart apache cobalt
 
-  echo -e "${GREEN_FG}[\U2714] Apache and Cobalt containers successfully restarted"
+  echo -e "${GREEN_FG}[\U2714] Apache and Cobalt Strike containers successfully restarted"
 fi
