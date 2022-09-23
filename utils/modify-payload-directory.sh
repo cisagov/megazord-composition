@@ -12,10 +12,10 @@ RESET="\033[0m"
 megazord_path="/tools/megazord-composition/"
 
 # Get the current payload directory from the Apache configuration
-current_dir=$(grep 'Alias' < "${megazord_path}"/src/apache2/apache2.conf)
+current_dir=$(grep 'Alias' "${megazord_path}"/src/apache2/apache2.conf)
 
 # Get the value of PAYLOAD_DIR from the .env file
-updated_dir="$(grep 'PAYLOAD_DIR' < "${megazord_path}"/.env \
+updated_dir="$(grep 'PAYLOAD_DIR' "${megazord_path}"/.env \
   | cut -d '=' -f 2)"
 
 updated_line="Alias $updated_dir \"/var/www/uploads\""
