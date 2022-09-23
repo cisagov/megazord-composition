@@ -22,7 +22,7 @@ updated_line="Alias $updated_dir \"/var/www/uploads\""
 
 echo "[*] Updating hosted payload directory to: $updated_dir"
 
-# Replace old uploads directory name with new name
+# Update the payload directory in the Apache configuration
 sed -i "s|${current_dir}|${updated_line}|" \
   "${megazord_path}"/src/apache2/apache2.conf
 
