@@ -11,7 +11,7 @@ RESET="\033[0m"
 # Path to the megazord-composition directory
 megazord_path="/tools/megazord-composition/"
 
-# Get line from apache2.conf with current name of payload directory
+# Get the current payload directory from the Apache configuration
 current_dir=$(grep 'Alias' < "${megazord_path}"/src/apache2/apache2.conf)
 
 # Get value of PAYLOAD_DIR from .env file
