@@ -8,29 +8,33 @@ MAGENTA_FG="\033[1;35m"
 #CYAN_FG="\033[1;36m"
 RESET="\033[0m"
 
-# Get line from apache2.conf with current name of payload directory
-current_dir=$(grep 'Alias' < /tools/megazord-composition/src/apache2/apache2.conf)
+# Path to the megazord-composition directory
+megazord_path="/tools/megazord-composition/"
 
-# Get value of PAYLOAD_DIR from .env file
-updated_dir="$(grep 'PAYLOAD_DIR' < /tools/megazord-composition/.env \
+# Get the current payload directory from the Apache configuration
+current_dir=$(grep 'Alias' "${megazord_path}"/src/apache2/apache2.conf)
+
+# Get the value of PAYLOAD_DIR from the .env file
+updated_dir="$(grep 'PAYLOAD_DIR' "${megazord_path}"/.env \
   | cut -d '=' -f 2)"
 
 updated_line="Alias $updated_dir \"/var/www/uploads\""
 
 echo "[*] Updating hosted payload directory to: $updated_dir"
 
-# replace old uploads directory name with new name
+# Update the payload directory in the Apache configuration
 sed -i "s|${current_dir}|${updated_line}|" \
-  /tools/megazord-composition/src/apache2/apache2.conf
+  "${megazord_path}"/src/apache2/apache2.conf
 
 echo -e "${GREEN_FG}[\U2714] Updated name of payload directory to:${RESET}\
  ${MAGENTA_FG}$updated_dir${RESET}\n"
 
-# If apache is already running, restart the container
-if sudo docker ps | grep 'apache' > /dev/null; then
-  echo "[*] Restarting apache container"
+# If the Apache container is already running, restart the Apache and Cobalt
+# Strike containers
+if sudo docker compose ps | grep 'apache' > /dev/null; then
+  echo "[*] Restarting the Apache and Cobalt Strike containers"
 
-  sudo docker restart apache
+  sudo docker compose restart apache cobalt
 
-  echo -e "${GREEN_FG}[\U2714] Apache container successfully restarted"
+  echo -e "${GREEN_FG}[\U2714] Apache and Cobalt Strike containers successfully restarted"
 fi
