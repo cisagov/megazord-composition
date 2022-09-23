@@ -30,10 +30,10 @@ echo -e "${GREEN_FG}[\U2714] Updated name of payload directory to:${RESET}\
  ${MAGENTA_FG}$updated_dir${RESET}\n"
 
 # If apache is already running, restart the container
-if sudo docker ps | grep 'apache' > /dev/null; then
+if sudo docker compose ps | grep 'apache' > /dev/null; then
   echo "[*] Restarting apache container"
 
-  sudo docker restart apache cobalt
+  sudo docker compose restart apache cobalt
 
   echo -e "${GREEN_FG}[\U2714] Apache and Cobalt Strike containers successfully restarted"
 fi
